@@ -29,16 +29,16 @@ THREESESSION.Viewport = function(parameters){
 	_container.appendChild(this.renderer.domElement);
 
   this.controls = new THREE.ViewportControls( this.camera, this.renderer.domElement);
-	this.controls.rotateSpeed = 1.1;
+	this.controls.rotateSpeed = 1.3;
   this.controls.zoomSpeed = 2.0;
-  this.controls.panSpeed = 2.0;
+  this.controls.panSpeed = 1.0;
   this.controls.noZoom = false;
   this.controls.noPan = false;
   this.controls.staticMoving = false;
   this.controls.dynamicDampingFactor = 0.3;
   this.controls.minDistance = 0;
   this.controls.maxDistance = _radius * 100;
-  this.controls.keys = [ 65, 83, 68 ]; // [ rotateKey, zoomKey, panKey ]
+  this.controls.keys = [ 18, 17, 16 ]; // [ rotateKey, zoomKey, panKey ]
 
 	this.scene = new THREE.Scene();
 	this.scene.add(this.camera);
