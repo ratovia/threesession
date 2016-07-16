@@ -95,11 +95,11 @@ THREE.ViewportControls = function ( object, domElement ) {
 
 		}
 
-		// _eye.copy( _this.object.position ).subSelf( _this.target );
+		_eye.copy( _this.object.position ).sub( _this.target );
 
 		var projection = _this.object.up.clone().setLength( mouseOnBall.y );
-		projection.addSelf( _this.object.up.clone().crossSelf( _eye ).setLength( mouseOnBall.x ) );
-		projection.addSelf( _eye.setLength( mouseOnBall.z ) );
+		projection.add( _this.object.up.clone().cross( _eye ).setLength( mouseOnBall.x ) );
+		projection.add( _eye.setLength( mouseOnBall.z ) );
 
 		return projection;
 
