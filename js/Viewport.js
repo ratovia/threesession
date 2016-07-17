@@ -1,16 +1,14 @@
 THREESESSION.Viewport = function(parameters){
   //
-  var _container = document.createElement('div'),
-      _width = window.innerWidth,
-  		_height = window.innerHeight,
+  var _container = document.getElementById('main'),
+      _width = _container.clientWidth,
+  		_height = _container.clientHeight,
   		_radius = 500,
   		_this = this,
   		SHADOW_MAP_WIDTH = 2048,
       PARTICLE_SIZE = 20,
   		SHADOW_MAP_HEIGHT = 1024;
   //
-  document.body.appendChild( _container );
-
   this.camera = new THREE.PerspectiveCamera(30, _width / _height,1,10000);
   this.camera.position.set(1200,500,600);
   this.camera.name = 'Camera';
@@ -50,12 +48,12 @@ THREESESSION.Viewport = function(parameters){
     _this.scene.add( object );
   };
 
-  this.setSize = function ( width, height ) {
-    _width = width;
-    _height = height;
-    _this.camera.aspect = width / height;
+  this.setSize = function () {
+    _width = _container.clientWidth;
+    _height = _container.clientHeight;
+    _this.camera.aspect = _width / _height;
     _this.camera.updateProjectionMatrix();
-    _this.renderer.setSize( width, height );
+    _this.renderer.setSize( _width, _height );
     _this.render();
   };
 

@@ -1,13 +1,14 @@
 (function(){
 	// // Ready
   $(document).ready(function(){
+    var menubar = new THREESESSION.Menu();
 		var viewport = new THREESESSION.Viewport();
     viewport.set_defoult_objects();
     viewport.animate();
-		viewport.setSize( window.innerWidth, window.innerHeight );
+		viewport.setSize();
 
 		window.addEventListener('resize',function(event){
-			viewport.setSize( window.innerWidth,window.innerHeight);
+			viewport.setSize();
 		},false);
 	});
 }());
