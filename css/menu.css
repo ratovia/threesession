@@ -9,8 +9,9 @@
 	margin-right:10px;
 }
 
-.dropdown-child{
-	float:none;
+.dropup-parent{
+	float:left;
+	margin-right:10px;
 }
 
 #transform,
@@ -23,16 +24,27 @@
     display: inline-block;
 }
 
-.dropdown-content {
+.drop-content {
     display: none;
 		float:right;
     position:absolute;
     background-color: #2B2B2B;
     min-width: 50px;
+		max-height: 100px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     padding: 12px 16px;
 }
 
-.dropdown:hover .dropdown-content {
+.dropdown:hover .drop-content {
     display: block;
+}
+
+.dropup {
+    position: relative;
+    display: inline-block;
+}
+
+.dropup:hover .drop-content {
+    display: block;
+		top:-130px;
 }
