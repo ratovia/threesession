@@ -1,7 +1,7 @@
 (function(){
 	// // Ready
   $(document).ready(function(){
-    var menubar = new THREESESSION.Menu();
+    var menu = new THREESESSION.Menu();
 		var viewport = new THREESESSION.Viewport();
     viewport.set_defoult_objects();
     viewport.animate();

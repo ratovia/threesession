@@ -1,0 +1,38 @@
+.menu-list {
+	list-style: none;
+	color: orange;
+	margin: 0 10px 0 10px;
+	padding: 0;
+}
+.dropdown-parent{
+	float:left;
+	margin-right:10px;
+}
+
+.dropdown-child{
+	float:none;
+}
+
+#transform,
+#sidebar {
+	color: rgb(0, 150, 101);
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+		float:right;
+    position:absolute;
+    background-color: #2B2B2B;
+    min-width: 50px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    padding: 12px 16px;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}

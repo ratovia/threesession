@@ -3,22 +3,64 @@
 	<meta charset="utf-8">
 	<title>Threesession | 3DCG modeling session</title>
   <link rel="stylesheet" type="text/css" href="css/layout.css">
+	<link rel="stylesheet" type="text/css" href="css/menu.css">
 </head>
 <body>
 	<div id="wrapper">
-    <div id="header"></div>
+    <div id="header">
+      <ul class="menu-list dropdown">
+				<li class="dropdown-parent">
+					<span>File</span>
+          <ul class="menu-list dropdown-content">
+          	<li class="dropdown-child">new</li>
+          	<li class="dropdown-child">exit</li>
+          </ul>
+				</li>
+				<li class="dropdown-parent">Session</li>
+				<li class="dropdown-parent">Help</li>
+			</ul>
+		</div>
     <div id="container">
       <div id="main"></div>
-			<div id="sidebar"></div>
+			<div id="sidebar">Scene</div>
     </div>
-    <div id="footer"></div>
+    <div id="footer">
+			<ul class="menu-list dropdown">
+				<li class="dropdown-parent">
+					<span>View</span>
+					<ul class="menu-list dropdown-content">
+						<li class="dropdown-child">top</li>
+						<li class="dropdown-child">front</li>
+						<li class="dropdown-child">side</li>
+						<li class="dropdown-child">defoult</li>
+					</ul>
+				</li>
+				<li class="dropdown-parent">
+					<span>Add</span>
+					<ul class="menu-list dropdown-content">
+						<li class="dropdown-child">cube</li>
+						<li class="dropdown-child">plane</li>
+						<li class="dropdown-child">cylinder</li>
+						<li class="dropdown-child">sphere</li>
+						<li class="dropdown-child">pointlight</li>
+						<li class="dropdown-child">directionlight</li>
+						<li class="dropdown-child">spotlight</li>
+					</ul>
+				</li>
+			</ul>
+			<ul id="transform" class="menu-list">
+				<li class="dropdown-parent">translate</li>
+				<li class="dropdown-parent">scale</li>
+				<li class="dropdown-parent">rotate</li>
+			</ul>
+		</div>
   </div>
 	<!-- library -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<script src="js/three.min.js"></script>
-	<script src="js/Threesession.js"></script>
   <script src="js/OrbitControls.js"></script>
 	<!-- script -->
+  <script src="js/Threesession.js"></script>
 	<script src="js/Menu.js"></script>
   <script src="js/Viewport.js"></script>
   <!-- ready script -->

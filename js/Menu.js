@@ -1,4 +1,3 @@
 THREESESSION.Menu = function(parameters){
-  
 
 }
