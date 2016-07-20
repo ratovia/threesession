@@ -8,16 +8,16 @@
 <body>
 	<div id="wrapper">
     <div id="header">
-      <ul class="menu-list">
-				<li class="dropdown-parent dropdown">
+      <ul class="nav-item">
+				<li class="drop file-menu-trigger">
 					<span>File</span>
-          <ul class="menu-list drop-content">
+          <ul id="file-menu" class="dropdown file-menu-trigger">
           	<li>new</li>
           	<li>exit</li>
           </ul>
 				</li>
-				<li class="dropdown-parent">Session</li>
-				<li class="dropdown-parent">Help</li>
+				<li class="drop">Session</li>
+				<li class="drop">Help</li>
 			</ul>
 		</div>
     <div id="container">
@@ -25,33 +25,33 @@
 			<div id="sidebar">Scene</div>
     </div>
     <div id="footer">
-			<ul class="menu-list">
-				<li class="dropup-parent dropup">
+			<ul class="nav-item">
+				<li class="drop view-menu-trigger">
 					<span>View</span>
-					<ul class="menu-list drop-content">
+					<ul id="view-menu" class="dropup view-menu-trigger">
 						<li>top</li>
 						<li>front</li>
 						<li>side</li>
 						<li>defoult</li>
 					</ul>
 				</li>
-				<li class="dropup-parent dropup">
+				<li class="drop add-menu-trigger">
 					<span>Add</span>
-					<ul class="menu-list drop-content">
-						  <li>cube</li>
-						  <li>plane</li>
-						  <li>cylinder</li>
-						  <li>sphere</li>
-							<li>pointlight</li>
-							<li>directionlight</li>
-							<li>spotlight</li>
+					<ul id="add-menu" class="dropup add-menu-trigger">
+					  <li>cube</li>
+					  <li>plane</li>
+					  <li>cylinder</li>
+					  <li>sphere</li>
+						<li>pointlight</li>
+						<li>directionlight</li>
+						<li>spotlight</li>
 					</ul>
 				</li>
 			</ul>
-			<ul id="transform" class="menu-list">
-				<li class="dropdown-parent">translate</li>
-				<li class="dropdown-parent">scale</li>
-				<li class="dropdown-parent">rotate</li>
+			<ul class="nav-item">
+				<li class="transform">translate</li>
+				<li class="transform">scale</li>
+				<li class="transform">rotate</li>
 			</ul>
 		</div>
   </div>
