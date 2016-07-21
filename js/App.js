@@ -7,6 +7,10 @@
     viewport.animate();
 		viewport.setSize();
 
+
+    $('#cube').on('click', function() {
+      viewport.addPrimitive("cube");
+    });
 		window.addEventListener('resize',function(event){
 			viewport.setSize();
 		},false);

@@ -66,4 +66,42 @@ THREESESSION.Viewport = function(parameters){
     requestAnimationFrame( _this.animate );
     _this.render();
   };
+
+  this.addPrimitive = function(type){
+    var material,
+        geometry,
+        mesh,
+        name,
+        whitemap,
+        rotation;
+    material = new THREE.MeshPhongMaterial({wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading});
+
+    if(type === "cube"){
+      geometry = new THREE.BoxGeometry(600,300,510,1,1,1);
+      name = "cube";
+    }else if(type === "plane"){
+      geometry = new THREE.PlaneGeometry(600,600,3,3);
+      name = "plane";
+
+      // TODO rotation
+    }else if(type === "cylinder"){
+      geometry = new THREE.CylinderGeometry(50, 50, 100, 16);
+      meshName = 'cylinder';
+    }else if(type === "sphere"){
+      geometry = new THREE.SphereGeometry(100,16,16);
+      meshName = 'THREE.SphereGeometry';
+    }else if(type === "pointlight"){
+
+    }else if(type === "directionalLight"){
+
+    }else if(type === "spotlight"){
+
+    }
+
+    mesh = new THREE.Mesh(geometry, material);
+
+    this.scene.add(mesh);
+
+    return mesh;
+  };
 }
