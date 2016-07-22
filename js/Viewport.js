@@ -77,15 +77,14 @@ THREESESSION.Viewport = function(parameters){
     material = new THREE.MeshPhongMaterial({wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading});
 
     if(type === "cube"){
-      geometry = new THREE.BoxGeometry(600,300,510,1,1,1);
+      geometry = new THREE.BoxGeometry(300,300,300,1,1,1);
       name = "cube";
     }else if(type === "plane"){
       geometry = new THREE.PlaneGeometry(600,600,3,3);
       name = "plane";
-
       // TODO rotation
     }else if(type === "cylinder"){
-      geometry = new THREE.CylinderGeometry(50, 50, 100, 16);
+      geometry = new THREE.CylinderGeometry(100, 100, 100, 16);
       meshName = 'cylinder';
     }else if(type === "sphere"){
       geometry = new THREE.SphereGeometry(100,16,16);
