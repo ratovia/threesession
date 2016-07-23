@@ -5,6 +5,7 @@ THREESESSION.Viewport = function(parameters){
   		_height = _container.clientHeight,
   		_radius = 500,
   		_this = this,
+      _select_object,
   		SHADOW_MAP_WIDTH = 2048,
       PARTICLE_SIZE = 20,
   		SHADOW_MAP_HEIGHT = 1024;
@@ -45,6 +46,7 @@ THREESESSION.Viewport = function(parameters){
     var geometry = new THREE.BoxGeometry( 500, 500, 500, 2, 2, 2 );
     var material = new THREE.MeshPhongMaterial( { color: 0xff0000} );
     var object = new THREE.Mesh( geometry, material );
+
     _this.scene.add( object );
   };
 
@@ -67,6 +69,45 @@ THREESESSION.Viewport = function(parameters){
     _this.render();
   };
 
+
+  this.renderer.domElement.addEventListener('mousedown',function(ev){
+    var projector = new THREE.Projector();
+    //マウスのグローバル変数
+    var mouse = { x: 0, y: 0 };
+    //オブジェクト格納グローバル変数
+
+     //マウス座標2D変換
+     var rect = ev.target.getBoundingClientRect();
+     mouse.x =  ev.clientX - rect.left;
+     mouse.y =  ev.clientY - rect.top;
+
+     //マウス座標3D変換 width（横）やheight（縦）は画面サイズ
+     mouse.x =  (mouse.x / _width) * 2 - 1;
+     mouse.y = -(mouse.y / _height) * 2 + 1;
+
+     // マウスベクトル
+     var vector = new THREE.Vector3( mouse.x, mouse.y ,1);
+
+    // vector はスクリーン座標系なので, オブジェクトの座標系に変換
+     vector = vector.unproject( this.camera );
+
+     // 始点, 向きベクトルを渡してレイを作成
+     var ray = new THREE.Raycaster( this.camera.position, vector.sub( this.camera.position ).normalize() );
+
+      // クリック判定
+     var obj = ray.intersectObjects( this.scene.children );
+
+      // クリックしていたら、alertを表示
+     if ( obj.length > 0 ){
+
+       alert("click!!")
+
+     }
+
+  });
+  this.select = function(obj){
+
+  };
   this.addPrimitive = function(type){
     var material,
         geometry,
