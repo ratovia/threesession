@@ -80,15 +80,15 @@ THREESESSION.Viewport = function(parameters){
     y =  event.clientY - rect.top;
 
     var mouse = new THREE.Vector2();
-    mouse.x =  (x / window.innerWidth) * 2 - 1;
-    mouse.y = -(y / window.innerHeight) * 2 + 1;
+    mouse.x =  (x / _width) * 2 - 1;
+    mouse.y = -(y / _height) * 2 + 1;
     // vector = camera.localToWorld(vector);
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse,_this.camera);
     var intersects = raycaster.intersectObjects(_this.scene.children);
 
-    console.log('%f',intersects[0].point.x);
-
+    intersects[0].object.position.x += 100;
+    intersects[0].object.material.color.set( 0xffffff );
   });
   this.select = function(obj){
 
