@@ -25,7 +25,7 @@ THREESESSION.Viewport = function(parameters){
   this.renderer.shadowMapDarkness = 0.5;
   this.renderer.shadowMapWidth = SHADOW_MAP_WIDTH;
   this.renderer.shadowMapHeight = SHADOW_MAP_HEIGHT;
-  this.renderer.shadowMapEnabled = true;
+  this.renderer.shadowMap.enabled = true;
   this.renderer.shadowMapSoft = true;
   _container.appendChild(this.renderer.domElement);
 
@@ -45,7 +45,7 @@ THREESESSION.Viewport = function(parameters){
 
   this.set_defoult_objects = function (){
     var geometry = new THREE.BoxGeometry( 500, 500, 500, 2, 2, 2 );
-    var material = new THREE.MeshPhongMaterial( { color: 0xff0000} );
+    var material = new THREE.MeshPhongMaterial( { color: 0xFFFFFF} );
     var object = new THREE.Mesh( geometry, material );
 
     _this.scene.add( object );
@@ -87,12 +87,24 @@ THREESESSION.Viewport = function(parameters){
     raycaster.setFromCamera(mouse,_this.camera);
     var intersects = raycaster.intersectObjects(_this.scene.children);
 
-    intersects[0].object.position.x += 100;
-    intersects[0].object.material.color.set( 0xffffff );
+    if(intersects.length > 0){
+      // intersects[0].object.position.x += 100;
+      // intersects[0].object.material.color.set( 0xffffff );
+      console.log('%f', intersects[0].point.x);
+      _this.select(intersects[0].object);
+    }
   });
-  this.select = function(obj){
 
+  this.select = function(obj){
+    if(_select_object !== obj){
+      if(_select_object){
+        _select_object.material.color.set(0xFFFFFF);
+      }
+      _select_object = obj;
+      _select_object.material.color.set(0xf19408);
+    }
   };
+
   this.addPrimitive = function(type){
     var material,
         geometry,
