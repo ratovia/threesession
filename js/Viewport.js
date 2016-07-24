@@ -10,7 +10,8 @@ THREESESSION.Viewport = function(parameters){
       PARTICLE_SIZE = 20,
   		SHADOW_MAP_HEIGHT = 1024;
   //
-  this.camera = new THREE.PerspectiveCamera(30, _width / _height,1,10000);
+  // this.camera = new THREE.PerspectiveCamera(30, _width / _height,1,10000);
+  this.camera = new THREE.OrthographicCamera(_width / - 2, _width / 2, _height / 2, _height / - 2, 1, 10000);
   this.camera.position.set(1200,500,600);
   this.camera.name = 'Camera';
   this.camera.lookAt(new THREE.Vector3());
@@ -70,39 +71,23 @@ THREESESSION.Viewport = function(parameters){
   };
 
 
-  this.renderer.domElement.addEventListener('mousedown',function(ev){
-    var projector = new THREE.Projector();
-    //マウスのグローバル変数
-    var mouse = { x: 0, y: 0 };
-    //オブジェクト格納グローバル変数
-
+  this.renderer.domElement.addEventListener('mousedown',function(event){
+    var x = event.clientX;
+    var y = event.clientY;
      //マウス座標2D変換
-     var rect = ev.target.getBoundingClientRect();
-     mouse.x =  ev.clientX - rect.left;
-     mouse.y =  ev.clientY - rect.top;
+    var rect = event.target.getBoundingClientRect();
+    x =  event.clientX - rect.left;
+    y =  event.clientY - rect.top;
 
-     //マウス座標3D変換 width（横）やheight（縦）は画面サイズ
-     mouse.x =  (mouse.x / _width) * 2 - 1;
-     mouse.y = -(mouse.y / _height) * 2 + 1;
+    var mouse = new THREE.Vector2();
+    mouse.x =  (x / window.innerWidth) * 2 - 1;
+    mouse.y = -(y / window.innerHeight) * 2 + 1;
+    // vector = camera.localToWorld(vector);
+    var raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse,_this.camera);
+    var intersects = raycaster.intersectObjects(_this.scene.children);
 
-     // マウスベクトル
-     var vector = new THREE.Vector3( mouse.x, mouse.y ,1);
-
-    // vector はスクリーン座標系なので, オブジェクトの座標系に変換
-     vector = vector.unproject( this.camera );
-
-     // 始点, 向きベクトルを渡してレイを作成
-     var ray = new THREE.Raycaster( this.camera.position, vector.sub( this.camera.position ).normalize() );
-
-      // クリック判定
-     var obj = ray.intersectObjects( this.scene.children );
-
-      // クリックしていたら、alertを表示
-     if ( obj.length > 0 ){
-
-       alert("click!!")
-
-     }
+    console.log('%f',intersects[0].point.x);
 
   });
   this.select = function(obj){
