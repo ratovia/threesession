@@ -72,25 +72,16 @@ THREESESSION.Viewport = function(parameters){
 
 
   this.renderer.domElement.addEventListener('mousedown',function(event){
-    var x = event.clientX;
-    var y = event.clientY;
-     //マウス座標2D変換
     var rect = event.target.getBoundingClientRect();
-    x =  event.clientX - rect.left;
-    y =  event.clientY - rect.top;
-
+    var x =  event.clientX - rect.left;
+    var y =  event.clientY - rect.top;
     var mouse = new THREE.Vector2();
     mouse.x =  (x / _width) * 2 - 1;
     mouse.y = -(y / _height) * 2 + 1;
-    // vector = camera.localToWorld(vector);
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse,_this.camera);
     var intersects = raycaster.intersectObjects(_this.scene.children);
-
     if(intersects.length > 0){
-      // intersects[0].object.position.x += 100;
-      // intersects[0].object.material.color.set( 0xffffff );
-      console.log('%f', intersects[0].point.x);
       _this.select(intersects[0].object);
     }
   });
