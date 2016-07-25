@@ -15,8 +15,6 @@ THREESESSION.Viewport = function(parameters){
   this.camera.position.set(1200,500,600);
   this.camera.name = 'Camera';
   this.camera.lookAt(new THREE.Vector3());
-  var controls = new THREE.OrbitControls(this.camera);
-
   this.renderer = new THREE.WebGLRenderer({clearAlpha: 1,clearColor: 0x2B2B2B});
   this.renderer.shadowCameraNear = 3;
   this.renderer.shadowCameraFar = this.camera.far;
@@ -28,6 +26,9 @@ THREESESSION.Viewport = function(parameters){
   this.renderer.shadowMap.enabled = true;
   this.renderer.shadowMapSoft = true;
   _container.appendChild(this.renderer.domElement);
+  var camera_controls = new THREE.OrbitControls(this.camera);
+  var object_controls = new THREE.TransformControls(_this.camera,_this.renderer.domElement);
+  object_controls.addEventListener("change",_this.render);
 
   this.scene = new THREE.Scene();
   this.scene.add(this.camera);
@@ -49,6 +50,9 @@ THREESESSION.Viewport = function(parameters){
     var object = new THREE.Mesh( geometry, material );
 
     _this.scene.add( object );
+    _this.select(object);
+    object_controls.attach(object);
+    _this.scene.add(object_controls);
   };
 
   this.setSize = function () {
@@ -61,7 +65,7 @@ THREESESSION.Viewport = function(parameters){
   };
 
   this.render = function() {
-    controls.update();
+    camera_controls.update();
     _this.renderer.render( _this.scene, _this.camera );
   };
 
@@ -93,6 +97,7 @@ THREESESSION.Viewport = function(parameters){
       }
       _select_object = obj;
       _select_object.material.color.set(0xf19408);
+      object_controls.attach(_select_object);
     }
   };
 
@@ -132,4 +137,49 @@ THREESESSION.Viewport = function(parameters){
 
     return mesh;
   };
+
+  window.addEventListener( 'keydown', function ( event ) {
+    switch ( event.keyCode ) {
+      case 81: // Q
+        object_controls.setSpace( object_controls.space === "local" ? "world" : "local" );
+      break;
+
+      case 17: // Ctrl
+        object_controls.setTranslationSnap( 100 );
+        object_controls.setRotationSnap( THREE.Math.degToRad( 15 ) );
+      break;
+
+      case 71: // g
+        object_controls.setMode( "translate" );
+      break;
+
+      case 82: // r
+        object_controls.setMode( "rotate" );
+      break;
+
+      case 83: // s
+        object_controls.setMode( "scale" );
+      break;
+
+      case 187:
+      case 107: // +, =, num+
+        object_controls.setSize( object_controls.size + 0.1 );
+      break;
+
+      case 189:
+      case 109: // -, _, num-
+        object_controls.setSize( Math.max( object_controls.size - 0.1, 0.1 ) );
+      break;
+
+    }
+  });
+
+	window.addEventListener( 'keyup', function ( event ) {
+  	switch ( event.keyCode ) {
+  		case 17: // Ctrl
+  			object_controls.setTranslationSnap( null );
+  			object_controls.setRotationSnap( null );
+      break;
+  	}
+	});
 }
