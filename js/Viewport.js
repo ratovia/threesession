@@ -6,6 +6,7 @@ THREESESSION.Viewport = function(parameters){
   		_radius = 500,
   		_this = this,
       _select_object,
+      _select_frame,
   		SHADOW_MAP_WIDTH = 2048,
       PARTICLE_SIZE = 20,
   		SHADOW_MAP_HEIGHT = 1024;
@@ -93,10 +94,11 @@ THREESESSION.Viewport = function(parameters){
   this.select = function(obj){
     if(_select_object !== obj){
       if(_select_object){
-        _select_object.material.color.set(0xFFFFFF);
+        this.scene.remove(_select_frame);
       }
       _select_object = obj;
-      _select_object.material.color.set(0xf19408);
+      _select_frame = new THREE.EdgesHelper( _select_object, 0xffa800 );
+      this.scene.add(_select_frame);
       object_controls.attach(_select_object);
     }
   };
@@ -113,6 +115,7 @@ THREESESSION.Viewport = function(parameters){
     if(type === "cube"){
       geometry = new THREE.BoxGeometry(300,300,300,1,1,1);
       name = "cube";
+
     }else if(type === "plane"){
       geometry = new THREE.PlaneGeometry(600,600,3,3);
       name = "plane";
@@ -134,14 +137,13 @@ THREESESSION.Viewport = function(parameters){
     mesh = new THREE.Mesh(geometry, material);
 
     this.scene.add(mesh);
-
     return mesh;
   };
 
   window.addEventListener( 'keydown', function ( event ) {
     switch ( event.keyCode ) {
-      case 81: // Q
-        object_controls.setSpace( object_controls.space === "local" ? "world" : "local" );
+      case 9: // tab
+        
       break;
 
       case 17: // Ctrl
