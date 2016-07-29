@@ -7,9 +7,14 @@ THREESESSION.Viewport = function(parameters){
   		_this = this,
       _select_object,
       _select_frame,
+      _select_flag = true,
+      _mouse = new THREE.Vector2(),
   		SHADOW_MAP_WIDTH = 2048,
       PARTICLE_SIZE = 20,
   		SHADOW_MAP_HEIGHT = 1024;
+
+
+
   //
   // this.camera = new THREE.PerspectiveCamera(30, _width / _height,1,10000);
   this.camera = new THREE.OrthographicCamera(_width / - 2, _width / 2, _height / 2, _height / - 2, 1, 10000);
@@ -55,7 +60,21 @@ THREESESSION.Viewport = function(parameters){
     object_controls.attach(object);
     _this.scene.add(object_controls);
   };
-
+  this.onmousemove = function(event){
+    var rect = event.target.getBoundingClientRect();
+    var x =  event.clientX - rect.left;
+    var y =  event.clientY - rect.top;
+    _mouse.x =  (x / _width) * 2 - 1;
+    _mouse.y = -(y / _height) * 2 + 1;
+  }
+  this.picking = function(event){
+    var raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(_mouse,_this.camera);
+    var intersects = raycaster.intersectObjects(_this.scene.children);
+    if(intersects.length > 0 && _select_flag == true){
+      _this.select(intersects[0].object);
+    }
+  }
   this.setSize = function () {
     _width = _container.clientWidth;
     _height = _container.clientHeight;
@@ -76,29 +95,14 @@ THREESESSION.Viewport = function(parameters){
   };
 
 
-  this.renderer.domElement.addEventListener('mousedown',function(event){
-    var rect = event.target.getBoundingClientRect();
-    var x =  event.clientX - rect.left;
-    var y =  event.clientY - rect.top;
-    var mouse = new THREE.Vector2();
-    mouse.x =  (x / _width) * 2 - 1;
-    mouse.y = -(y / _height) * 2 + 1;
-    var raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouse,_this.camera);
-    var intersects = raycaster.intersectObjects(_this.scene.children);
-    if(intersects.length > 0){
-      _this.select(intersects[0].object);
-    }
-  });
-
   this.select = function(obj){
     if(_select_object !== obj){
       if(_select_object){
-        this.scene.remove(_select_frame);
+        _this.scene.remove(_select_frame);
       }
       _select_object = obj;
       _select_frame = new THREE.EdgesHelper( _select_object, 0xffa800 );
-      this.scene.add(_select_frame);
+      _this.scene.add(_select_frame);
       object_controls.attach(_select_object);
     }
   };
@@ -111,7 +115,6 @@ THREESESSION.Viewport = function(parameters){
         whitemap,
         rotation;
     material = new THREE.MeshPhongMaterial({wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading});
-
     if(type === "cube"){
       geometry = new THREE.BoxGeometry(300,300,300,1,1,1);
       name = "cube";
@@ -139,11 +142,19 @@ THREESESSION.Viewport = function(parameters){
     this.scene.add(mesh);
     return mesh;
   };
-
-  window.addEventListener( 'keydown', function ( event ) {
+  this.mode_switch = function(){
+    if(_select_flag){
+      _select_flag = false;// to edit mode
+      _this.scene.remove(_select_object);
+    }else {
+      _select_flag = true;//to object mode
+      _this.scene.add(_select_object);
+    }
+  }
+  this.onkeydown = function(event){
     switch ( event.keyCode ) {
       case 9: // tab
-        
+        _this.mode_switch();
       break;
 
       case 17: // Ctrl
@@ -174,14 +185,14 @@ THREESESSION.Viewport = function(parameters){
       break;
 
     }
-  });
+  };
 
-	window.addEventListener( 'keyup', function ( event ) {
+	this.onkeyup = function(event){
   	switch ( event.keyCode ) {
   		case 17: // Ctrl
   			object_controls.setTranslationSnap( null );
   			object_controls.setRotationSnap( null );
       break;
   	}
-	});
+	};
 }
