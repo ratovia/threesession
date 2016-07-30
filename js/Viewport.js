@@ -18,7 +18,7 @@ THREESESSION.Viewport = function(parameters){
   //
   // this.camera = new THREE.PerspectiveCamera(30, _width / _height,1,10000);
   this.camera = new THREE.OrthographicCamera(_width / - 2, _width / 2, _height / 2, _height / - 2, 1, 10000);
-  this.camera.position.set(1200,500,600);
+  this.camera.position.set(500,200,400);
   this.camera.name = 'Camera';
   this.camera.lookAt(new THREE.Vector3());
   this.renderer = new THREE.WebGLRenderer({clearAlpha: 1,clearColor: 0x2B2B2B});
@@ -39,19 +39,21 @@ THREESESSION.Viewport = function(parameters){
   this.scene = new THREE.Scene();
   this.scene.add(this.camera);
 
-  var gridHelper = new THREE.GridHelper( 640,80,0xFF0000,0x2B2B2B);
+  var gridHelper = new THREE.GridHelper( 480,80,0xFF0000,0x2B2B2B);
   this.scene.add( gridHelper );
 
   var directionalLight = new THREE.DirectionalLight( 0xffffff );
   directionalLight.position.set( 0.3, 0.7, 0.5 );
   this.scene.add( directionalLight );
 
+
+
   /////////////////////////////////////////////////////
   //////////////// public method //////////////////////
   /////////////////////////////////////////////////////
 
   this.set_defoult_objects = function (){
-    var geometry = new THREE.BoxGeometry( 500, 500, 500, 2, 2, 2 );
+    var geometry = new THREE.BoxGeometry( 100, 100, 100, 2, 2, 2 );
     var material = new THREE.MeshPhongMaterial( { color: 0xFFFFFF} );
     var object = new THREE.Mesh( geometry, material );
 
@@ -59,6 +61,46 @@ THREESESSION.Viewport = function(parameters){
     _this.select(object);
     object_controls.attach(object);
     _this.scene.add(object_controls);
+
+    var geometry1 = new THREE.BoxGeometry( 120, 120, 120, 16, 16, 16 );
+  				var vertices = geometry1.vertices;
+
+  				var positions = new Float32Array( vertices.length * 3 );
+  				var colors = new Float32Array( vertices.length * 3 );
+  				var sizes = new Float32Array( vertices.length );
+
+  				var vertex;
+  				var color = new THREE.Color();
+
+  				for ( var i = 0, l = vertices.length; i < l; i ++ ) {
+
+  					vertex = vertices[ i ];
+  					vertex.toArray( positions, i * 3 );
+
+  					color.setHSL( 0.01 + 0.1 * ( i / l ), 1.0, 0.5 )
+  					color.toArray( colors, i * 3 );
+
+  					sizes[ i ] = PARTICLE_SIZE * 0.5;
+
+  				}
+
+  				var geometry = new THREE.BufferGeometry();
+  				geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+  				geometry.addAttribute( 'customColor', new THREE.BufferAttribute( colors, 3 ) );
+  				geometry.addAttribute( 'size', new THREE.BufferAttribute( sizes, 1) );
+
+          var material = new THREE.ShaderMaterial( {
+
+					uniforms: {
+						color:   { value: new THREE.Color( 0xffffff ) },
+					},
+
+					alphaTest: 0.9,
+
+				} );
+
+          particles = new THREE.Points( geometry, material );
+  				_this.scene.add( particles );
   };
   this.onmousemove = function(event){
     var rect = event.target.getBoundingClientRect();
@@ -116,11 +158,11 @@ THREESESSION.Viewport = function(parameters){
         rotation;
     material = new THREE.MeshPhongMaterial({wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading});
     if(type === "cube"){
-      geometry = new THREE.BoxGeometry(300,300,300,1,1,1);
+      geometry = new THREE.BoxGeometry(60,60,60,1,1,1);
       name = "cube";
 
     }else if(type === "plane"){
-      geometry = new THREE.PlaneGeometry(600,600,3,3);
+      geometry = new THREE.PlaneGeometry(120,120,3,3);
       name = "plane";
       // TODO rotation
     }else if(type === "cylinder"){
