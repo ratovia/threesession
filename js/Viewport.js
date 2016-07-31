@@ -8,6 +8,7 @@ THREESESSION.Viewport = function(parameters){
       _select_object,
       _select_frame,
       _select_flag = true,
+      _select_vertex,
       _mouse = new THREE.Vector2(),
   		SHADOW_MAP_WIDTH = 2048,
       PARTICLE_SIZE = 20,
@@ -62,46 +63,36 @@ THREESESSION.Viewport = function(parameters){
     object_controls.attach(object);
     _this.scene.add(object_controls);
 
-    var geometry1 = new THREE.BoxGeometry( 120, 120, 120, 16, 16, 16 );
-  				var vertices = geometry1.vertices;
 
-  				var positions = new Float32Array( vertices.length * 3 );
-  				var colors = new Float32Array( vertices.length * 3 );
-  				var sizes = new Float32Array( vertices.length );
-
-  				var vertex;
-  				var color = new THREE.Color();
-
-  				for ( var i = 0, l = vertices.length; i < l; i ++ ) {
-
-  					vertex = vertices[ i ];
-  					vertex.toArray( positions, i * 3 );
-
-  					color.setHSL( 0.01 + 0.1 * ( i / l ), 1.0, 0.5 )
-  					color.toArray( colors, i * 3 );
-
-  					sizes[ i ] = PARTICLE_SIZE * 0.5;
-
-  				}
-
-  				var geometry = new THREE.BufferGeometry();
-  				geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-  				geometry.addAttribute( 'customColor', new THREE.BufferAttribute( colors, 3 ) );
-  				geometry.addAttribute( 'size', new THREE.BufferAttribute( sizes, 1) );
-
-          var material = new THREE.ShaderMaterial( {
-
-					uniforms: {
-						color:   { value: new THREE.Color( 0xffffff ) },
-					},
-
-					alphaTest: 0.9,
-
-				} );
-
-          particles = new THREE.Points( geometry, material );
-  				_this.scene.add( particles );
   };
+  this.vertex_perticle = function(geometry){
+    var vertices = geometry.vertices;
+		var positions = new Float32Array( vertices.length * 3 );
+		var colors = new Float32Array( vertices.length * 3 );
+		var sizes = new Float32Array( vertices.length );
+
+		var vertex;
+		// var color = new THREE.Color(0xff00ff);
+
+		for ( var i = 0, l = vertices.length; i < l; i ++ ) {
+
+			vertex = vertices[ i ];
+			vertex.toArray( positions, i * 3 );
+			sizes[ i ] = PARTICLE_SIZE * 0.5;
+
+		}
+
+		var vertex_geometry = new THREE.BufferGeometry();
+		vertex_geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+		// vertex_geometry.addAttribute( 'customColor', new THREE.BufferAttribute( colors, 3 ) );
+		vertex_geometry.addAttribute( 'size', new THREE.BufferAttribute( sizes, 1) );
+
+    var material = new THREE.PointsMaterial( { size: 10,color: 0x8f8f8f} );
+
+    _select_vertex = new THREE.Points( vertex_geometry, material );
+		_this.scene.add( _select_vertex );
+  };
+
   this.onmousemove = function(event){
     var rect = event.target.getBoundingClientRect();
     var x =  event.clientX - rect.left;
@@ -145,6 +136,7 @@ THREESESSION.Viewport = function(parameters){
       _select_object = obj;
       _select_frame = new THREE.EdgesHelper( _select_object, 0xffa800 );
       _this.scene.add(_select_frame);
+      object_controls.attach(_select_vertex);
       object_controls.attach(_select_object);
     }
   };
@@ -184,15 +176,19 @@ THREESESSION.Viewport = function(parameters){
     this.scene.add(mesh);
     return mesh;
   };
+
   this.mode_switch = function(){
     if(_select_flag){
       _select_flag = false;// to edit mode
+      _this.vertex_perticle(_select_object.geometry);
       _this.scene.remove(_select_object);
     }else {
       _select_flag = true;//to object mode
+      _this.scene.remove(_select_vertex);
       _this.scene.add(_select_object);
     }
   }
+
   this.onkeydown = function(event){
     switch ( event.keyCode ) {
       case 9: // tab
