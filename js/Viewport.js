@@ -13,9 +13,6 @@ THREESESSION.Viewport = function(parameters){
   		SHADOW_MAP_WIDTH = 2048,
       PARTICLE_SIZE = 20,
   		SHADOW_MAP_HEIGHT = 1024;
-
-
-
   //
   // this.camera = new THREE.PerspectiveCamera(30, _width / _height,1,10000);
   this.camera = new THREE.OrthographicCamera(_width / - 2, _width / 2, _height / 2, _height / - 2, 1, 10000);
@@ -62,8 +59,6 @@ THREESESSION.Viewport = function(parameters){
     _this.select(object);
     object_controls.attach(object);
     _this.scene.add(object_controls);
-
-
   };
   this.vertex_perticle = function(geometry){
     var vertices = geometry.vertices;
@@ -134,9 +129,9 @@ THREESESSION.Viewport = function(parameters){
         _this.scene.remove(_select_frame);
       }
       _select_object = obj;
+
       _select_frame = new THREE.EdgesHelper( _select_object, 0xffa800 );
       _this.scene.add(_select_frame);
-      object_controls.attach(_select_vertex);
       object_controls.attach(_select_object);
     }
   };
