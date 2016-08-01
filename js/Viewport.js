@@ -55,7 +55,7 @@ THREESESSION.Viewport = function(parameters){
     _this.scene.add(object_controls);
   };
 
-  this.setSize = function () {
+  this.setSize = functiong () {
     _width = _container.clientWidth;
     _height = _container.clientHeight;
     _this.camera.aspect = _width / _height;
