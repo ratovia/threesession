@@ -1,6 +1,6 @@
-\documentclass[10.5pt,a4paper]{jsarticle}
+\documentclass[10.5pt, a4paper]{jsarticle}
 %--------------図を挿入するための設定等々-----------
-\usepackage{amsmath,amssymb}
+\usepackage{amsmath, amssymb}
 \usepackage{bm}
 \usepackage[dvipdfmx]{graphicx}
 \usepackage{ascmac}
@@ -11,7 +11,7 @@
 \usepackage{comment}
 
 %--------------文章の縦横の位置調整-----------
-\usepackage[top=15truemm,bottom=15truemm,left=15truemm,right=15truemm]{geometry}
+\usepackage[top=15truemm, bottom=15truemm, left=15truemm, right=15truemm]{geometry}
 %\setlength{\textheight}{46\baselineskip}
 %\addtolength{\textheight}{\topskip}
 %\setlength{\voffset}{-70pt}
@@ -21,10 +21,9 @@
 
 \twocolumn[
     \begin{center}
-    	    {pluto 中間発表}\vspace{3mm}\\
 	    {\LARGE 3DCGモデリングにおける同期編集システムの研究 }\vspace{3mm}\\
 	    {知能情報工学科 乃万研究室 13231071　古城戸　隆志\hspace{3mm}\\
-                   2016 年  12月  4日 (木)}
+                   2016 年  9月  1日 (木)}
     \end{center}
     \vspace{7mm}
 ]
@@ -61,63 +60,64 @@
 
 %% 本文 %%
 \section{背景}
-近年,IT業界やクリエイティブ業界で,プログラミングやコンテンツ制作をする際,複数人によるチーム開発が盛んである.
-GitやSlack等の伝達用ツールを用いることで,チーム内でデータの共有や知識の共有をある程度円滑に済ますことができるが,お互いに別のファイルを操作し,作業の途中経過を伝達やマージするときに手間が生じる.
-そこで,Google DocumentやWord Onlineに代表されるテキストデータを同期するシステムを使用することにより,この問題を解決できる.
-しかしながら,3Dモデリングによる頂点などの3次元データを双方向で同期する際,頂点の移動や削除をする時の操作の矛盾が起こる可能性があることが問題点として挙げられる.
+近年, IT業界やクリエイティブ業界で, プログラミングやコンテンツ制作をする際, 複数人によるチーム開発が盛んである.
+GitやSlack等の伝達用ツールを用いることで, チーム内でデータの共有や知識の共有をある程度円滑に済ますことができるが,
+お互いに別のファイルを操作し, 作業の途中経過を伝達やマージするときに手間が生じる.
+そこで, Google DocumentやWord Onlineに代表されるテキストデータを同期するシステムを使用することにより, この問題を解決できる.
+しかしながら, 3Dモデリングによる頂点などの3次元データを双方向で同期する際, 頂点の移動や削除をする時の操作の矛盾が起こる可能性があることが問題点として挙げられる.
 矛盾はクライアント側で最新ではないデータを更新する時に起こる.
 \section{目的}
-本研究では,同期編集においての矛盾回避処理を実装することで,複数人で頂点データを共有し同期編集可能なモデリングソフトを開発する.
-これにより,即時にユーザー同士の知識の共有ができ,モデリング作業の効率を上げることを目的にしている.
+本研究では, 同期編集においての矛盾回避処理を実装することで, 複数人で頂点データを共有し同期編集可能なモデリングソフトを開発する.
+これにより, 即時にユーザー同士の知識の共有ができ, モデリング作業の効率を上げることを目的にしている.
 
 \section{システム}
-本システムは,ブラウザ上で頂点編集できるモデリングアプリケーションとサーバープログラムで構成し,複数のクライアントがサーバーを介して頂点データを同期して共有できる.
-複数クライアントでの編集結果の矛盾回避に差分情報を用いる.差分情報を用いてクライアント間でデータをリアルタイムに同期するためには,(1)ユーザーの入力をデータにし送信する,(2)差分データを管理する,(3)差分データを適用する,の手順が必要である.
+本システムは, ブラウザ上で頂点編集できるモデリングアプリケーションとサーバープログラムで構成し, 複数のクライアントがサーバーを介して頂点データを同期して共有できる.
+複数クライアントでの編集結果の矛盾回避に差分情報を用いる.  差分情報を用いてクライアント間でデータをリアルタイムに同期するためには, (1)ユーザーの入力をデータにし送信する, (2)差分データを管理する, (3)差分データを適用する, の手順が必要である.
 
 \subsection{データの送信}
-ユーザーは従来のモデリングソフトと同様に頂点を編集し,作品を作成する.
+ユーザーは従来のモデリングソフトと同様に頂点を編集し, 作品を作成する.
 システムのクライアントは、ユーザーが選択した頂点とその頂点の更新後の状態とクライアントidをJson形式で送信する.
-また,新規のクライアントはクライアントidを送信し,サーバーに参加の要求をする.
+また, 新規のクライアントはクライアントidを送信し, サーバーに参加の要求をする.
 
 \subsection{差分データを管理する}
-システムのサーバーは,ユーザーが入力した操作を差分データとしてデータベースに登録,一定時間ごとに差分データをまとめたスナップショットの作成と差分データの削除をする.
-また,クライアントからポーリングが行われた際,スナップショットとそれ以降の差分データから現在のスナップショットを作成し送信する.また新規のクライアントを検出した場合もスナップショットの作成と差分データの削除をする.
+システムのサーバーは, ユーザーが入力した操作を差分データとしてデータベースに登録, 一定時間ごとに差分データをまとめたスナップショットの作成と差分データの削除をする.
+また, クライアントからポーリングが行われた際, スナップショットとそれ以降の差分データから現在のスナップショットを作成し送信する. また新規のクライアントを検出した場合もスナップショットの作成と差分データの削除をする.
 
 \subsection{差分データの適用}
-システムのクライアントは短い一定時間ごとにサーバーへ頂点データをポーリングする.クライアントは送られてきたデータから自分と同じクライアントidを除外し,それ以外のデータをグラフィック命令を用いて適用し画面に描画する.
+システムのクライアントは短い一定時間ごとにサーバーへ頂点データをポーリングする. クライアントは送られてきたデータから自分と同じクライアントidを除外し, それ以外のデータをグラフィック命令を用いて適用し画面に描画する.
 
 
 \section{進捗と今後の方針}
-現在,WebGLのライブラリであるThree.jsを用いて,基本的なカメラの制御とモデルのビューワーを実装した.また,簡易的な頂点編集をクライアント側のみ実装した.
+現在, WebGLのライブラリであるThree. jsを用いて,  基本的なカメラの制御とモデルのビューワーを実装した. また, 簡易的な頂点編集をクライアント側のみ実装した.
 今後はサーバー側の処理部分とデータベースの処理を実装していく.
 
 %%　参考文献　%%
 
 \begin{thebibliography}{9}
 \bibitem{sketch}
-加藤裕樹ら，“スケッチインターフェースを備えた非写実的頭髪モデリング,”Visual Computing グラフィクスとCAD 合同シンポジウム2003予稿集，2003.
+加藤裕樹ら，“スケッチインターフェースを備えた非写実的頭髪モデリング, ”Visual Computing グラフィクスとCAD 合同シンポジウム2003予稿集，2003.
 
 %\bibitem{SAHC}
-%L. Luo, H. Li and S. Rusinkiewicz, “Structure-aware hair capture,” \textit{ACM Transactions on Graphics}, Vol. 32, No. 76, 2013.
+%L.  Luo,  H.  Li and S.  Rusinkiewicz,  “Structure-aware hair capture, ” \textit{ACM Transactions on Graphics},  Vol.  32,  No.  76,  2013.
 \begin{comment}
 \bibitem{L-system1}
-A.Lindenmayer, “Mathematical Models for Cellular Interactions in Development, I: Filaments with One-sided Inputs,” J. Theoretical Biology Vol. 18, pp. 280-299 1968．
+A. Lindenmayer,  “Mathematical Models for Cellular Interactions in Development,  I: Filaments with One-sided Inputs, ” J.  Theoretical Biology Vol.  18,  pp.  280-299 1968．
 \bibitem{L-system2}
-A.Lindenmayer, “Mathematical Models for Cellular Interactions in Development, II: Simple and Branching Filaments with Two-sided Inputs,” J. Theoretical Biology Vol. 18, pp. 300-315 1968．
+A. Lindenmayer,  “Mathematical Models for Cellular Interactions in Development,  II: Simple and Branching Filaments with Two-sided Inputs, ” J.  Theoretical Biology Vol.  18,  pp.  300-315 1968．
 \bibitem{city}
 CityEngine，
-\url{http://www.esri.com/software/cityengine}，Esri．
+\url{http://www. esri. com/software/cityengine}，Esri．
 \end{comment}
 
 \begin{comment}
 \bibitem{hikari}
 光ナビゲーションキーボード，
-\url{http://casio.jp/emi/products/key_lighting/}，CASIO.
+\url{http://casio. jp/emi/products/key_lighting/}，CASIO.
 \bibitem{kenban}
 中村靖，池田陽子，開いた瞬間！すぐ弾ける「大人のピアノ」，廣済堂出版，2003．
 \bibitem{projection}
 Real Rock Band: Play piano like a pro with light keys，
-\url{http://www.newscientist.com/article/dn24296#.Uns6B3B7J8G}．
+\url{http://www. newscientist. com/article/dn24296#. Uns6B3B7J8G}．
 \end{comment}
 \end{thebibliography}
 
