@@ -7,6 +7,7 @@ THREESESSION.Viewport = function(parameters){
   		_this = this,
       _select_object,
       _select_frame,
+      _select_edge,
       _select_flag = true,
       _select_vertex,
       _mouse = new THREE.Vector2(),
@@ -34,6 +35,7 @@ THREESESSION.Viewport = function(parameters){
   var object_controls = new THREE.TransformControls(_this.camera,_this.renderer.domElement);
   object_controls.addEventListener("change",_this.render);
 
+
   this.scene = new THREE.Scene();
   this.scene.add(this.camera);
 
@@ -51,15 +53,11 @@ THREESESSION.Viewport = function(parameters){
   /////////////////////////////////////////////////////
 
   this.set_defoult_objects = function (){
-    var geometry = new THREE.BoxGeometry( 100, 100, 100, 2, 2, 2 );
-    var material = new THREE.MeshPhongMaterial( { color: 0xFFFFFF} );
-    var object = new THREE.Mesh( geometry, material );
-
-    _this.scene.add( object );
-    _this.select(object);
-    object_controls.attach(object);
-    _this.scene.add(object_controls);
+    var mesh = _this.addPrimitive("cube");
+    _this.select(mesh);
+    object_controls.attach(mesh);
   };
+
   this.vertex_perticle = function(geometry){
     var vertices = geometry.vertices;
 		var positions = new Float32Array( vertices.length * 3 );
@@ -94,7 +92,8 @@ THREESESSION.Viewport = function(parameters){
     var y =  event.clientY - rect.top;
     _mouse.x =  (x / _width) * 2 - 1;
     _mouse.y = -(y / _height) * 2 + 1;
-  }
+  };
+
   this.picking = function(event){
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(_mouse,_this.camera);
@@ -102,7 +101,8 @@ THREESESSION.Viewport = function(parameters){
     if(intersects.length > 0 && _select_flag == true){
       _this.select(intersects[0].object);
     }
-  }
+  };
+
   this.setSize = function () {
     _width = _container.clientWidth;
     _height = _container.clientHeight;
@@ -124,19 +124,56 @@ THREESESSION.Viewport = function(parameters){
 
 
   this.select = function(obj){
-    if(_select_object !== obj){
-      if(_select_object){
-        _this.scene.remove(_select_frame);
+    if(_select_object !== obj){//新しく選択されたら
+      if(_select_object){//元の選択を消す
+        _this.scene.remove(_select_edge);
       }
       _select_object = obj;
-
-      _select_frame = new THREE.EdgesHelper( _select_object, 0xffa800 );
-      _this.scene.add(_select_frame);
+      var frame = _this.create_frame(obj);
+      var vertex = _this.create_vertex(obj);
+      frame.visible = false;
+      vertex.visible = false;
+      _this.scene.add(frame);
+      _this.scene.add(vertex);
+      _select_frame = frame;
+      _select_vertex = vertex;
+      _select_edge = new THREE.EdgesHelper( _select_object, 0xffa800 );
+      _this.scene.add(_select_edge);
       object_controls.attach(_select_object);
+      _this.scene.add(object_controls);
     }
   };
 
   this.addPrimitive = function(type){
+    var mesh = _this.create_mesh(type);
+    _this.scene.add(mesh);
+    _this.select(mesh);
+    return mesh;
+  };
+
+  this.create_vertex = function(mesh){
+    var material = new THREE.PointsMaterial({
+      size: 10,color: 0xFFFFFF
+    });
+    var vertices = mesh.geometry.vertices;
+    var particle = new THREE.Geometry();
+    for(var i = 0,l = vertices.length; i < l; i++){
+      // console.log(particle);
+      particle.vertices.push(vertices[i]);
+    }
+    var mesh = new THREE.Points(particle,material);
+    console.log(vertices);
+    console.log(particle.vertices);
+
+    return mesh;
+  }
+
+  this.create_frame = function(mesh){
+    frame = new THREE.WireframeHelper( mesh, 0x00ff00 );
+    return frame;
+  };
+
+  this.create_mesh = function(type){
     var material,
         geometry,
         mesh,
@@ -158,31 +195,31 @@ THREESESSION.Viewport = function(parameters){
     }else if(type === "sphere"){
       geometry = new THREE.SphereGeometry(100,16,16);
       meshName = 'THREE.SphereGeometry';
-    }else if(type === "pointlight"){
-
-    }else if(type === "directionalLight"){
-
-    }else if(type === "spotlight"){
-
     }
-
     mesh = new THREE.Mesh(geometry, material);
-
-    this.scene.add(mesh);
     return mesh;
   };
 
   this.mode_switch = function(){
-    if(_select_flag){
-      _select_flag = false;// to edit mode
-      _this.vertex_perticle(_select_object.geometry);
-      _this.scene.remove(_select_object);
-    }else {
-      _select_flag = true;//to object mode
-      _this.scene.remove(_select_vertex);
-      _this.scene.add(_select_object);
+    if(_select_object !== gridHelper){
+      if(_select_flag){
+        _select_flag = false;// to edit mode
+        _select_object.visible = false;
+        _select_frame.visible = true;
+        _select_vertex.visible = true;
+        _select_edge.visible = false;
+        console.log(_select_object);
+        // _this.scene.remove(_select_object);
+      }else {
+        _select_flag = true;//to object mode
+        _select_object.visible = true;
+        _select_edge.visible = true;
+        _select_vertex.visible = false;
+        _select_frame.visible = false;
+        // _this.scene.add(_select_object);
+      }
     }
-  }
+  };
 
   this.onkeydown = function(event){
     switch ( event.keyCode ) {
