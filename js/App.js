@@ -8,6 +8,8 @@
 		viewport.setSize();
 
 
+
+
     $('#cube').on('click', function() {
       viewport.addPrimitive("cube");
     });
@@ -20,6 +22,22 @@
     $('#sphere').on('click', function() {
       viewport.addPrimitive("sphere");
     });
+
+    viewport.renderer.domElement.addEventListener('mousedown',function(event){
+      viewport.picking();
+    });
+
+    window.addEventListener( 'keydown', function ( event ) {
+      viewport.onkeydown(event);
+    }, false);
+
+    window.addEventListener("mousemove", function(event){
+      viewport.onmousemove(event);
+    }, false);
+
+    window.addEventListener("keyup", function(event){
+      viewport.onkeyup(event);
+    },false);
 
 		window.addEventListener('resize',function(event){
 			viewport.setSize();
