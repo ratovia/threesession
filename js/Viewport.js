@@ -133,8 +133,8 @@ THREESESSION.Viewport = function(parameters){
       var vertex = _this.create_vertex(obj);
       frame.visible = false;
       vertex.visible = false;
+      frame.add(vertex);
       _this.scene.add(frame);
-      _this.scene.add(vertex);
       _select_frame = frame;
       _select_vertex = vertex;
       _select_edge = new THREE.EdgesHelper( _select_object, 0xffa800 );
@@ -157,6 +157,7 @@ THREESESSION.Viewport = function(parameters){
     });
     var vertices = mesh.geometry.vertices;
     var particle = new THREE.Geometry();
+    console.log(mesh);
     for(var i = 0,l = vertices.length; i < l; i++){
       // console.log(particle);
       particle.vertices.push(vertices[i]);
@@ -208,7 +209,7 @@ THREESESSION.Viewport = function(parameters){
         _select_frame.visible = true;
         _select_vertex.visible = true;
         _select_edge.visible = false;
-        console.log(_select_object);
+        // console.log(_select_object);
         // _this.scene.remove(_select_object);
       }else {
         _select_flag = true;//to object mode
