@@ -9,6 +9,7 @@ THREESESSION.Viewport = function(parameters){
       _select_frame,
       _select_edge,
       _select_flag = true,
+      _vertex,
       _select_vertex,
       _mouse = new THREE.Vector2(),
   		SHADOW_MAP_WIDTH = 2048,
@@ -58,34 +59,6 @@ THREESESSION.Viewport = function(parameters){
     object_controls.attach(mesh);
   };
 
-  this.vertex_perticle = function(geometry){
-    var vertices = geometry.vertices;
-		var positions = new Float32Array( vertices.length * 3 );
-		var colors = new Float32Array( vertices.length * 3 );
-		var sizes = new Float32Array( vertices.length );
-
-		var vertex;
-		// var color = new THREE.Color(0xff00ff);
-
-		for ( var i = 0, l = vertices.length; i < l; i ++ ) {
-
-			vertex = vertices[ i ];
-			vertex.toArray( positions, i * 3 );
-			sizes[ i ] = PARTICLE_SIZE * 0.5;
-
-		}
-
-		var vertex_geometry = new THREE.BufferGeometry();
-		vertex_geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
-		// vertex_geometry.addAttribute( 'customColor', new THREE.BufferAttribute( colors, 3 ) );
-		vertex_geometry.addAttribute( 'size', new THREE.BufferAttribute( sizes, 1) );
-
-    var material = new THREE.PointsMaterial( { size: 10,color: 0x8f8f8f} );
-
-    _select_vertex = new THREE.Points( vertex_geometry, material );
-		_this.scene.add( _select_vertex );
-  };
-
   this.onmousemove = function(event){
     var rect = event.target.getBoundingClientRect();
     var x =  event.clientX - rect.left;
@@ -97,9 +70,36 @@ THREESESSION.Viewport = function(parameters){
   this.picking = function(event){
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(_mouse,_this.camera);
-    var intersects = raycaster.intersectObjects(_this.scene.children);
-    if(intersects.length > 0 && _select_flag == true){
-      _this.select(intersects[0].object);
+    if(_select_flag){
+      var intersects = raycaster.intersectObjects(_this.scene.children);
+      if(intersects.length > 0){
+        _this.select(intersects[0].object);
+      }
+    }else{
+      var intersects = raycaster.intersectObject(_vertex);
+      console.log("3");
+      console.log(intersects[0]);
+      console.log(_select_vertex);
+      if(intersects.length > 0){
+        var x1,y1,z1,x2,y2,z2,d,min_d = 1000,min_idx = 0;
+        x1 = intersects[0].point.x;
+        y1 = intersects[0].point.y;
+        z1 = intersects[0].point.z;
+        console.log(intersects[0].object);
+        for(var i = 0,l = intersects[0].object.vertices.length;i < l;i++){
+          x2 = intersects[0].object.vertices[i].x;
+          y2 = intersects[0].object.vertices[i].y;
+          z2 = intersects[0].object.vertices[i].z;
+
+          d = Math.sqrt(Math.pow(Math.floor(x1) - Math.floor(x2)) + Math.pow(Math.floor(y1) - Math.floor(y2)) + Math.pow(Math.floor(z1) - Math.floor(z2)));
+
+          if(min_d > d){
+            min_d = d;
+            min_idx = i;
+          }
+        }
+        _this.select(intersects[0].object.vertices[i]);
+      }
     }
   };
 
@@ -122,25 +122,40 @@ THREESESSION.Viewport = function(parameters){
     _this.render();
   };
 
-
   this.select = function(obj){
-    if(_select_object !== obj){//新しく選択されたら
-      if(_select_object){//元の選択を消す
-        _this.scene.remove(_select_edge);
+    if(_select_flag){
+      if(_select_object !== obj){//新しく選択されたら
+        if(_select_object){//元の選択を消す
+          _this.scene.remove(_select_edge);
+        }
+        _select_object = obj;
+        var frame = _this.create_frame(obj);
+        var vertex = _this.create_vertex(obj);
+        frame.visible = false;
+        vertex.visible = false;
+        frame.add(vertex);
+        _this.scene.add(frame);
+        _select_frame = frame;
+        _vertex = vertex;
+        _select_edge = new THREE.EdgesHelper( _select_object, 0xffa800 );
+        _this.scene.add(_select_edge);
+        object_controls.attach(_select_object);
+        _this.scene.add(object_controls);
       }
-      _select_object = obj;
-      var frame = _this.create_frame(obj);
-      var vertex = _this.create_vertex(obj);
-      frame.visible = false;
-      vertex.visible = false;
-      frame.add(vertex);
-      _this.scene.add(frame);
-      _select_frame = frame;
-      _select_vertex = vertex;
-      _select_edge = new THREE.EdgesHelper( _select_object, 0xffa800 );
-      _this.scene.add(_select_edge);
-      object_controls.attach(_select_object);
-      _this.scene.add(object_controls);
+    }else{
+      console.log(_select_vertex);
+      console.log(obj);
+      if(_select_vertex !== obj){
+        if(_select_vertex){
+          //iro modosu
+          console.log("1");
+          console.log(_select_vertex);
+        }
+        _select_vertex = obj;
+        console.log("2");
+        console.log(_select_vertex);
+        //irokaeru
+      }
     }
   };
 
@@ -155,18 +170,25 @@ THREESESSION.Viewport = function(parameters){
     var material = new THREE.PointsMaterial({
       size: 10,color: 0xFFFFFF
     });
+    var spritematerial = new THREE.SpriteMaterial({size: 10,color: 0xFFFFFF});
+
     var vertices = mesh.geometry.vertices;
-    var particle = new THREE.Geometry();
+    // var particle = new THREE.Geometry();
     console.log(mesh);
+    var particle = new THREE.Group();
     for(var i = 0,l = vertices.length; i < l; i++){
       // console.log(particle);
-      particle.vertices.push(vertices[i]);
+      // particle.vertices.push(vertices[i]);
+      var sprite = new THREE.Sprite(spritematerial);
+      sprite.position.set(vertices[i].x,vertices[i].y,vertices[i].z);
+      particle.add(sprite);
     }
-    var mesh = new THREE.Points(particle,material);
-    console.log(vertices);
-    console.log(particle.vertices);
+    // var mesh = new THREE.Points(particle,material);
 
-    return mesh;
+    console.log(particle);
+    // console.log(particle.vertices);
+
+    return particle;
   }
 
   this.create_frame = function(mesh){
@@ -207,7 +229,7 @@ THREESESSION.Viewport = function(parameters){
         _select_flag = false;// to edit mode
         _select_object.visible = false;
         _select_frame.visible = true;
-        _select_vertex.visible = true;
+        _vertex.visible = true;
         _select_edge.visible = false;
         // console.log(_select_object);
         // _this.scene.remove(_select_object);
@@ -215,7 +237,7 @@ THREESESSION.Viewport = function(parameters){
         _select_flag = true;//to object mode
         _select_object.visible = true;
         _select_edge.visible = true;
-        _select_vertex.visible = false;
+        _vertex.visible = false;
         _select_frame.visible = false;
         // _this.scene.add(_select_object);
       }
