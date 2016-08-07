@@ -122,12 +122,12 @@ THREESESSION.Viewport = function(parameters){
       var x = vertices[i].x;
       var y = vertices[i].y;
       var z = vertices[i].z;
-      vertices[i].x = mat[0] * x + mat[4] * y + mat[8] * z + mat[12] * 1;
-      vertices[i].y = mat[1] * x + mat[5] * y + mat[9] * z + mat[13] * 1;
-      vertices[i].z = mat[2] * x + mat[6] * y + mat[10] * z + mat[14] * 1;
+      //
+      vertices[i].x = mat.elements[0] * x + mat.elements[4] * y + mat.elements[8]  * z + mat.elements[12] * 1;
+      vertices[i].y = mat.elements[1] * x + mat.elements[5] * y + mat.elements[9]  * z + mat.elements[13] * 1;
+      vertices[i].z = mat.elements[2] * x + mat.elements[6] * y + mat.elements[10] * z + mat.elements[14] * 1;
+       console.log(mat.elements[0]);
     }
-    console.log("vertices");
-    console.log(vertices);
     return vertices;
   };
 
@@ -157,10 +157,7 @@ THREESESSION.Viewport = function(parameters){
           _this.scene.remove(_select_edge);
         }
         _select_object = obj;
-        _select_object.verticesNeedUpdate = true;q
-
-
-        
+        _select_object.verticesNeedUpdate = true;
         var frame = _this.create_frame(obj);
         var vertex = _this.create_vertex(obj);
         frame.visible = false;
