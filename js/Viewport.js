@@ -77,30 +77,58 @@ THREESESSION.Viewport = function(parameters){
       }
     }else{
       var intersects = raycaster.intersectObject(_vertex);
-      console.log("3");
+      console.log("intersects[0]");
       console.log(intersects[0]);
+      console.log("_select_vertex");
       console.log(_select_vertex);
       if(intersects.length > 0){
-        var x1,y1,z1,x2,y2,z2,d,min_d = 1000,min_idx = 0;
+        var x1,y1,z1,x2,y2,z2,d,min_d = 10000,min_idx = 0;
         x1 = intersects[0].point.x;
         y1 = intersects[0].point.y;
         z1 = intersects[0].point.z;
+        console.log("intersects[0].object");
         console.log(intersects[0].object);
-        for(var i = 0,l = intersects[0].object.vertices.length;i < l;i++){
-          x2 = intersects[0].object.vertices[i].x;
-          y2 = intersects[0].object.vertices[i].y;
-          z2 = intersects[0].object.vertices[i].z;
+        var vertices = _this.fix_vertices();
+        for(var i = 0,l = intersects[0].object.geometry.vertices.length;i < l;i++){
+          x2 = vertices[i].x;
+          y2 = vertices[i].y;
+          z2 = vertices[i].z;
 
-          d = Math.sqrt(Math.pow(Math.floor(x1) - Math.floor(x2)) + Math.pow(Math.floor(y1) - Math.floor(y2)) + Math.pow(Math.floor(z1) - Math.floor(z2)));
-
+          d = Math.sqrt(Math.pow(Math.floor(x1) - Math.floor(x2),2) + Math.pow(Math.floor(y1) - Math.floor(y2),2) + Math.pow(Math.floor(z1) - Math.floor(z2),2));
           if(min_d > d){
             min_d = d;
             min_idx = i;
+            console.log("min_d");
+            console.log(min_d);
+            console.log("min_idx");
+            console.log(min_idx);
           }
         }
-        _this.select(intersects[0].object.vertices[i]);
+        _this.select(intersects[0].object.geometry.vertices[min_idx]);
       }
     }
+  };
+
+  this.fix_vertices = function(){
+    var vertices = _select_object.geometry.vertices;
+    var mat = _select_object.matrix;
+    console.log("_select_object.matrix");
+    console.log(_select_object.matrix);
+    console.log("_select_object.geometry");
+    console.log(_select_object);
+    console.log("vertices");
+    console.log(vertices);
+    for(var i = 0, l = vertices.length;i < l ; i++){
+      var x = vertices[i].x;
+      var y = vertices[i].y;
+      var z = vertices[i].z;
+      vertices[i].x = mat[0] * x + mat[4] * y + mat[8] * z + mat[12] * 1;
+      vertices[i].y = mat[1] * x + mat[5] * y + mat[9] * z + mat[13] * 1;
+      vertices[i].z = mat[2] * x + mat[6] * y + mat[10] * z + mat[14] * 1;
+    }
+    console.log("vertices");
+    console.log(vertices);
+    return vertices;
   };
 
   this.setSize = function () {
@@ -129,6 +157,10 @@ THREESESSION.Viewport = function(parameters){
           _this.scene.remove(_select_edge);
         }
         _select_object = obj;
+        _select_object.verticesNeedUpdate = true;q
+
+
+        
         var frame = _this.create_frame(obj);
         var vertex = _this.create_vertex(obj);
         frame.visible = false;
@@ -143,16 +175,18 @@ THREESESSION.Viewport = function(parameters){
         _this.scene.add(object_controls);
       }
     }else{
+      console.log("_select_vertex");
       console.log(_select_vertex);
+      console.log("obj");
       console.log(obj);
       if(_select_vertex !== obj){
         if(_select_vertex){
           //iro modosu
-          console.log("1");
+          console.log("_select_vertex");
           console.log(_select_vertex);
         }
         _select_vertex = obj;
-        console.log("2");
+        console.log("_select_vertex");
         console.log(_select_vertex);
         //irokaeru
       }
@@ -170,25 +204,25 @@ THREESESSION.Viewport = function(parameters){
     var material = new THREE.PointsMaterial({
       size: 10,color: 0xFFFFFF
     });
-    var spritematerial = new THREE.SpriteMaterial({size: 10,color: 0xFFFFFF});
+    // var spritematerial = new THREE.SpriteMaterial({size: 10,color: 0xFFFFFF});
 
     var vertices = mesh.geometry.vertices;
-    // var particle = new THREE.Geometry();
+    var particle = new THREE.Geometry();
     console.log(mesh);
-    var particle = new THREE.Group();
+    // var particle = new THREE.Group();
     for(var i = 0,l = vertices.length; i < l; i++){
       // console.log(particle);
-      // particle.vertices.push(vertices[i]);
-      var sprite = new THREE.Sprite(spritematerial);
-      sprite.position.set(vertices[i].x,vertices[i].y,vertices[i].z);
-      particle.add(sprite);
+      particle.vertices.push(vertices[i]);
+      // var sprite = new THREE.Sprite(spritematerial);
+      // sprite.position.set(vertices[i].x,vertices[i].y,vertices[i].z);
+      // particle.add(sprite);
     }
-    // var mesh = new THREE.Points(particle,material);
+    var mesh = new THREE.Points(particle,material);
 
-    console.log(particle);
+    console.log(mesh);
     // console.log(particle.vertices);
 
-    return particle;
+    return mesh;
   }
 
   this.create_frame = function(mesh){
