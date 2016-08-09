@@ -9,6 +9,7 @@ THREESESSION.Viewport = function(parameters){
       _select_frame,
       _select_edge,
       _select_flag = true,
+      _selected,
       _vertex,
       _select_vertex,
       _mouse = new THREE.Vector2(),
@@ -33,9 +34,8 @@ THREESESSION.Viewport = function(parameters){
   this.renderer.shadowMapSoft = true;
   _container.appendChild(this.renderer.domElement);
   var camera_controls = new THREE.OrbitControls(this.camera);
-  var object_controls = new THREE.TransformControls(_this.camera,_this.renderer.domElement);
+  var object_controls = new THREE.TransformControls(_this.camera,this.renderer.domElement);
   object_controls.addEventListener("change",_this.render);
-
 
   this.scene = new THREE.Scene();
   this.scene.add(this.camera);
@@ -47,8 +47,6 @@ THREESESSION.Viewport = function(parameters){
   directionalLight.position.set( 0.3, 0.7, 0.5 );
   this.scene.add( directionalLight );
 
-
-
   /////////////////////////////////////////////////////
   //////////////// public method //////////////////////
   /////////////////////////////////////////////////////
@@ -56,7 +54,6 @@ THREESESSION.Viewport = function(parameters){
   this.set_defoult_objects = function (){
     var mesh = _this.addPrimitive("cube");
     _this.select(mesh);
-    object_controls.attach(mesh);
   };
 
   this.onmousemove = function(event){
@@ -76,57 +73,40 @@ THREESESSION.Viewport = function(parameters){
         _this.select(intersects[0].object);
       }
     }else{
-      var intersects = raycaster.intersectObject(_vertex);
-      console.log("intersects[0]");
-      console.log(intersects[0]);
-      console.log("_select_vertex");
-      console.log(_select_vertex);
+      var intersects = raycaster.intersectObjects(_this.scene.children);
       if(intersects.length > 0){
-        var x1,y1,z1,x2,y2,z2,d,min_d = 10000,min_idx = 0;
+        var x1,y1,z1,x2,y2,z2,d,min_d = 10000,min_idx = -1;
         x1 = intersects[0].point.x;
         y1 = intersects[0].point.y;
         z1 = intersects[0].point.z;
-        console.log("intersects[0].object");
-        console.log(intersects[0].object);
         var vertices = _this.fix_vertices();
-        for(var i = 0,l = intersects[0].object.geometry.vertices.length;i < l;i++){
+        for(var i = 0,l = _select_object.geometry.vertices.length;i < l;i++){
           x2 = vertices[i].x;
           y2 = vertices[i].y;
           z2 = vertices[i].z;
-
           d = Math.sqrt(Math.pow(Math.floor(x1) - Math.floor(x2),2) + Math.pow(Math.floor(y1) - Math.floor(y2),2) + Math.pow(Math.floor(z1) - Math.floor(z2),2));
           if(min_d > d){
             min_d = d;
             min_idx = i;
-            console.log("min_d");
-            console.log(min_d);
-            console.log("min_idx");
-            console.log(min_idx);
           }
         }
-        _this.select(intersects[0].object.geometry.vertices[min_idx]);
+        _this.select(_select_object.geometry.vertices[min_idx]);
       }
     }
   };
 
   this.fix_vertices = function(){
-    var vertices = _select_object.geometry.vertices;
+    var geometry = _select_object.geometry.clone();
+    var vertices = geometry.vertices;
     var mat = _select_object.matrix;
-    console.log("_select_object.matrix");
-    console.log(_select_object.matrix);
-    console.log("_select_object.geometry");
-    console.log(_select_object);
-    console.log("vertices");
-    console.log(vertices);
+    var x,y,z;
     for(var i = 0, l = vertices.length;i < l ; i++){
-      var x = vertices[i].x;
-      var y = vertices[i].y;
-      var z = vertices[i].z;
-      //
+      x = vertices[i].x;
+      y = vertices[i].y;
+      z = vertices[i].z;
       vertices[i].x = mat.elements[0] * x + mat.elements[4] * y + mat.elements[8]  * z + mat.elements[12] * 1;
       vertices[i].y = mat.elements[1] * x + mat.elements[5] * y + mat.elements[9]  * z + mat.elements[13] * 1;
       vertices[i].z = mat.elements[2] * x + mat.elements[6] * y + mat.elements[10] * z + mat.elements[14] * 1;
-       console.log(mat.elements[0]);
     }
     return vertices;
   };
@@ -151,41 +131,32 @@ THREESESSION.Viewport = function(parameters){
   };
 
   this.select = function(obj){
-    if(_select_flag){
+    if(_select_flag){//obj
       if(_select_object !== obj){//新しく選択されたら
         if(_select_object){//元の選択を消す
           _this.scene.remove(_select_edge);
         }
         _select_object = obj;
         _select_object.verticesNeedUpdate = true;
-        var frame = _this.create_frame(obj);
-        var vertex = _this.create_vertex(obj);
-        frame.visible = false;
-        vertex.visible = false;
-        frame.add(vertex);
-        _this.scene.add(frame);
-        _select_frame = frame;
-        _vertex = vertex;
+        _select_frame = _this.create_frame(obj);
+        _vertex = _this.create_vertex(obj.geometry.vertices);
+        _select_frame.visible = false;
+        _vertex.visible = false;
+        _select_frame.add(_vertex);
+        _this.scene.add(_select_frame);
         _select_edge = new THREE.EdgesHelper( _select_object, 0xffa800 );
         _this.scene.add(_select_edge);
         object_controls.attach(_select_object);
         _this.scene.add(object_controls);
       }
-    }else{
-      console.log("_select_vertex");
-      console.log(_select_vertex);
-      console.log("obj");
-      console.log(obj);
+    }else{//edit
       if(_select_vertex !== obj){
         if(_select_vertex){
-          //iro modosu
-          console.log("_select_vertex");
-          console.log(_select_vertex);
+          _select_frame.remove(_selected);
         }
         _select_vertex = obj;
-        console.log("_select_vertex");
-        console.log(_select_vertex);
-        //irokaeru
+        _selected = _this.create_selected(_select_vertex);
+        _select_frame.add(_selected);
       }
     }
   };
@@ -197,33 +168,31 @@ THREESESSION.Viewport = function(parameters){
     return mesh;
   };
 
-  this.create_vertex = function(mesh){
+  this.create_selected = function(vertex){
     var material = new THREE.PointsMaterial({
-      size: 10,color: 0xFFFFFF
+      size:25,color: 0xff7a00
     });
-    // var spritematerial = new THREE.SpriteMaterial({size: 10,color: 0xFFFFFF});
-
-    var vertices = mesh.geometry.vertices;
     var particle = new THREE.Geometry();
-    console.log(mesh);
-    // var particle = new THREE.Group();
+    particle.vertices.push(vertex);
+    var mesh = new THREE.Points(particle,material);
+    return mesh;
+  };
+
+  this.create_vertex = function(vertices){
+    var material = new THREE.PointsMaterial({
+      size: 20,color: 0xFFFFFF
+    });
+    var particle = new THREE.Geometry();
     for(var i = 0,l = vertices.length; i < l; i++){
-      // console.log(particle);
       particle.vertices.push(vertices[i]);
-      // var sprite = new THREE.Sprite(spritematerial);
-      // sprite.position.set(vertices[i].x,vertices[i].y,vertices[i].z);
-      // particle.add(sprite);
     }
     var mesh = new THREE.Points(particle,material);
-
-    console.log(mesh);
-    // console.log(particle.vertices);
-
     return mesh;
-  }
+  };
 
   this.create_frame = function(mesh){
     frame = new THREE.WireframeHelper( mesh, 0x00ff00 );
+    console.log(frame);
     return frame;
   };
 
@@ -262,18 +231,15 @@ THREESESSION.Viewport = function(parameters){
         _select_frame.visible = true;
         _vertex.visible = true;
         _select_edge.visible = false;
-        // console.log(_select_object);
-        // _this.scene.remove(_select_object);
       }else {
         _select_flag = true;//to object mode
         _select_object.visible = true;
         _select_edge.visible = true;
         _vertex.visible = false;
         _select_frame.visible = false;
-        // _this.scene.add(_select_object);
       }
     }
-  };
+  };g
 
   this.onkeydown = function(event){
     switch ( event.keyCode ) {
