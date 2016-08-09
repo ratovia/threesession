@@ -239,7 +239,7 @@ THREESESSION.Viewport = function(parameters){
         _select_frame.visible = false;
       }
     }
-  };g
+  };
 
   this.onkeydown = function(event){
     switch ( event.keyCode ) {
