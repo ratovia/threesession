@@ -231,10 +231,12 @@ THREESESSION.Viewport = function(parameters){
         _select_frame.visible = true;
         _vertex.visible = true;
         _select_edge.visible = false;
+        object_controls.visible = false;
       }else {
         _select_flag = true;//to object mode
         _select_object.visible = true;
         _select_edge.visible = true;
+        object_controls.visible = true;
         _vertex.visible = false;
         _select_frame.visible = false;
       }
