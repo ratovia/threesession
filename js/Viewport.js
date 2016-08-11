@@ -8,10 +8,15 @@ THREESESSION.Viewport = function(parameters){
       _select_object,
       _select_frame,
       _select_edge,
-      _select_flag = true,
       _selected,
       _vertex,
       _select_vertex,
+      _mode = {
+        OBJECTMODE:0,
+        EDITMODE:1,
+        TRANSMODE:2
+      },
+      _state = _mode.OBJECTMODE,
       _mouse = new THREE.Vector2(),
   		SHADOW_MAP_WIDTH = 2048,
       PARTICLE_SIZE = 20,
@@ -67,12 +72,12 @@ THREESESSION.Viewport = function(parameters){
   this.picking = function(event){
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(_mouse,_this.camera);
-    if(_select_flag){
+    if(_state == _mode.OBJECTMODE){
       var intersects = raycaster.intersectObjects(_this.scene.children);
       if(intersects.length > 0){
         _this.select(intersects[0].object);
       }
-    }else{
+    }else if(_state == _mode.EDITMODE){
       var intersects = raycaster.intersectObjects(_this.scene.children);
       if(intersects.length > 0){
         var x1,y1,z1,x2,y2,z2,d,min_d = 10000,min_idx = -1;
@@ -131,7 +136,7 @@ THREESESSION.Viewport = function(parameters){
   };
 
   this.select = function(obj){
-    if(_select_flag){//obj
+    if(_state == _mode.OBJECTMODE){//obj
       if(_select_object !== obj){//新しく選択されたら
         if(_select_object){//元の選択を消す
           _this.scene.remove(_select_edge);
@@ -149,7 +154,7 @@ THREESESSION.Viewport = function(parameters){
         object_controls.attach(_select_object);
         _this.scene.add(object_controls);
       }
-    }else{//edit
+    }else if(_state == _mode.EDITMODE){//edit
       if(_select_vertex !== obj){
         if(_select_vertex){
           _select_frame.remove(_selected);
@@ -225,15 +230,15 @@ THREESESSION.Viewport = function(parameters){
 
   this.mode_switch = function(){
     if(_select_object !== gridHelper){
-      if(_select_flag){
-        _select_flag = false;// to edit mode
+      if(_state == _mode.OBJECTMODE){
+        _state = _mode.EDITMODE;// to edit mode
         _select_object.visible = false;
         _select_frame.visible = true;
         _vertex.visible = true;
         _select_edge.visible = false;
         object_controls.visible = false;
-      }else {
-        _select_flag = true;//to object mode
+      }else if(_state == _mode.EDITMODE){
+        _state = _mode.OBJECTMODE;//to object mode
         _select_object.visible = true;
         _select_edge.visible = true;
         object_controls.visible = true;
