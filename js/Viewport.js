@@ -16,6 +16,18 @@ THREESESSION.Viewport = function(parameters){
         EDITMODE:1,
         TRANSMODE:2
       },
+      _material = {
+        VERTEX : new THREE.PointsMaterial({
+          size: 20,color: 0xFFFFFF
+        }),
+        SELECTED : new THREE.PointsMaterial({
+          size:30,color: 0xff7a00
+        }),
+        NORMAL: new THREE.MeshPhongMaterial({
+          wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading
+        }),
+        
+      }
       _state = _mode.OBJECTMODE,
       _mouse = new THREE.Vector2(),
   		SHADOW_MAP_WIDTH = 2048,
@@ -174,9 +186,7 @@ THREESESSION.Viewport = function(parameters){
   };
 
   this.create_selected = function(vertex){
-    var material = new THREE.PointsMaterial({
-      size:25,color: 0xff7a00
-    });
+    var material = _material.SELECTED;
     var particle = new THREE.Geometry();
     particle.vertices.push(vertex);
     var mesh = new THREE.Points(particle,material);
@@ -184,9 +194,7 @@ THREESESSION.Viewport = function(parameters){
   };
 
   this.create_vertex = function(vertices){
-    var material = new THREE.PointsMaterial({
-      size: 20,color: 0xFFFFFF
-    });
+    var material = _material.VERTEX;
     var particle = new THREE.Geometry();
     for(var i = 0,l = vertices.length; i < l; i++){
       particle.vertices.push(vertices[i]);
@@ -208,7 +216,7 @@ THREESESSION.Viewport = function(parameters){
         name,
         whitemap,
         rotation;
-    material = new THREE.MeshPhongMaterial({wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading});
+    material = _material.NORMAL;
     if(type === "cube"){
       geometry = new THREE.BoxGeometry(60,60,60,1,1,1);
       name = "cube";
