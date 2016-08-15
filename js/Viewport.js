@@ -11,23 +11,12 @@ THREESESSION.Viewport = function(parameters){
       _selected,
       _vertex,
       _select_vertex,
+      _select_vertex_idx,
       _mode = {
         OBJECTMODE:0,
         EDITMODE:1,
         TRANSMODE:2
       },
-      _material = {
-        VERTEX : new THREE.PointsMaterial({
-          size: 20,color: 0xFFFFFF
-        }),
-        SELECTED : new THREE.PointsMaterial({
-          size:30,color: 0xff7a00
-        }),
-        NORMAL: new THREE.MeshPhongMaterial({
-          wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading
-        }),
-        
-      }
       _state = _mode.OBJECTMODE,
       _mouse = new THREE.Vector2(),
   		SHADOW_MAP_WIDTH = 2048,
@@ -63,6 +52,9 @@ THREESESSION.Viewport = function(parameters){
   var directionalLight = new THREE.DirectionalLight( 0xffffff );
   directionalLight.position.set( 0.3, 0.7, 0.5 );
   this.scene.add( directionalLight );
+  var directionalLight2 = new THREE.DirectionalLight( 0xffffff );
+  directionalLight2.position.set( -0.3, -0.7, -0.5 );
+  this.scene.add( directionalLight2 );
 
   /////////////////////////////////////////////////////
   //////////////// public method //////////////////////
@@ -84,14 +76,11 @@ THREESESSION.Viewport = function(parameters){
   this.picking = function(event){
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(_mouse,_this.camera);
-    if(_state == _mode.OBJECTMODE){
-      var intersects = raycaster.intersectObjects(_this.scene.children);
-      if(intersects.length > 0){
+    var intersects = raycaster.intersectObjects(_this.scene.children);
+    if(intersects.length > 0){
+      if(_state == _mode.OBJECTMODE){
         _this.select(intersects[0].object);
-      }
-    }else if(_state == _mode.EDITMODE){
-      var intersects = raycaster.intersectObjects(_this.scene.children);
-      if(intersects.length > 0){
+      }else if(_state == _mode.EDITMODE){
         var x1,y1,z1,x2,y2,z2,d,min_d = 10000,min_idx = -1;
         x1 = intersects[0].point.x;
         y1 = intersects[0].point.y;
@@ -107,7 +96,26 @@ THREESESSION.Viewport = function(parameters){
             min_idx = i;
           }
         }
+        _select_vertex_idx = min_idx;
         _this.select(_select_object.geometry.vertices[min_idx]);
+      }else if(_state == _mode.TRANSMODE){
+        console.log(_selected);
+        _selected.geometry.vertices[0].set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z)
+        _selected.geometry.verticesNeedUpdate = true;
+        console.log(_select_vertex_idx);
+        _select_object.geometry.vertices[_select_vertex_idx].set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z);
+        _select_object.geometry.verticesNeedUpdate = true;
+        console.log(_select_frame);
+        _select_frame.geometry.vertices[_select_vertex_idx].set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z);
+        _select_frame.geometry.verticesNeedUpdate = true;
+        console.log(_vertex);
+        _select_vertex.set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z);
+        _select_vertex.verticesNeedUpdate = true;
+        _vertex.geometry.vertices[_select_vertex_idx].set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z);
+        _vertex.geometry.verticesNeedUpdate = true;
+        // _select_edge.geometry.vertices[_select_vertex_idx].set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z);
+        // _select_edge.geometry.verticesNeedUpdate = true;
+        this.mode_switch(_mode.EDITMODE);
       }
     }
   };
@@ -159,9 +167,10 @@ THREESESSION.Viewport = function(parameters){
         _vertex = _this.create_vertex(obj.geometry.vertices);
         _select_frame.visible = false;
         _vertex.visible = false;
-        _select_frame.add(_vertex);
-        _this.scene.add(_select_frame);
+        _select_object.add(_vertex);
+        // _this.scene.add(_select_frame);
         _select_edge = new THREE.EdgesHelper( _select_object, 0xffa800 );
+        console.log(_select_edge);
         _this.scene.add(_select_edge);
         object_controls.attach(_select_object);
         _this.scene.add(object_controls);
@@ -169,11 +178,11 @@ THREESESSION.Viewport = function(parameters){
     }else if(_state == _mode.EDITMODE){//edit
       if(_select_vertex !== obj){
         if(_select_vertex){
-          _select_frame.remove(_selected);
+          _select_object.remove(_selected);
         }
         _select_vertex = obj;
         _selected = _this.create_selected(_select_vertex);
-        _select_frame.add(_selected);
+        _select_object.add(_selected);
       }
     }
   };
@@ -186,7 +195,9 @@ THREESESSION.Viewport = function(parameters){
   };
 
   this.create_selected = function(vertex){
-    var material = _material.SELECTED;
+    var material = new THREE.PointsMaterial({
+      size:30,color: 0xff7a00
+    });
     var particle = new THREE.Geometry();
     particle.vertices.push(vertex);
     var mesh = new THREE.Points(particle,material);
@@ -194,7 +205,9 @@ THREESESSION.Viewport = function(parameters){
   };
 
   this.create_vertex = function(vertices){
-    var material = _material.VERTEX;
+    var material = new THREE.PointsMaterial({
+      size: 20,color: 0xFFFFFF
+    });
     var particle = new THREE.Geometry();
     for(var i = 0,l = vertices.length; i < l; i++){
       particle.vertices.push(vertices[i]);
@@ -204,8 +217,11 @@ THREESESSION.Viewport = function(parameters){
   };
 
   this.create_frame = function(mesh){
-    frame = new THREE.WireframeHelper( mesh, 0x00ff00 );
-    console.log(frame);
+    var geometry = mesh.geometry.clone();
+    var material = new THREE.MeshBasicMaterial({
+      color : 0x0000ff,wireframe: true
+    });
+    var frame = new THREE.Mesh(geometry,material);
     return frame;
   };
 
@@ -216,7 +232,9 @@ THREESESSION.Viewport = function(parameters){
         name,
         whitemap,
         rotation;
-    material = _material.NORMAL;
+    material = new THREE.MeshPhongMaterial({
+      wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading
+    });
     if(type === "cube"){
       geometry = new THREE.BoxGeometry(60,60,60,1,1,1);
       name = "cube";
@@ -236,30 +254,48 @@ THREESESSION.Viewport = function(parameters){
     return mesh;
   };
 
-  this.mode_switch = function(){
-    if(_select_object !== gridHelper){
-      if(_state == _mode.OBJECTMODE){
-        _state = _mode.EDITMODE;// to edit mode
-        _select_object.visible = false;
-        _select_frame.visible = true;
-        _vertex.visible = true;
-        _select_edge.visible = false;
-        object_controls.visible = false;
-      }else if(_state == _mode.EDITMODE){
-        _state = _mode.OBJECTMODE;//to object mode
-        _select_object.visible = true;
-        _select_edge.visible = true;
-        object_controls.visible = true;
-        _vertex.visible = false;
-        _select_frame.visible = false;
+  this.mode_switch = function(mode){
+    if(mode == _mode.EDITMODE){
+      console.log(_select_object);
+      _select_object.material.wireframe = true;
+      _select_object.material.color.setRGB(1, 0, 0);
+      _state = _mode.EDITMODE;// to edit mode
+      _select_object.visible = true;
+      _select_frame.visible = true;
+      _vertex.visible = true;
+      _select_edge.visible = false;
+      object_controls.visible = false;
+    }else if(mode == _mode.OBJECTMODE){
+      _select_object.material.wireframe = false;
+      _select_object.material.color.setRGB(1, 1, 1);
+      _state = _mode.OBJECTMODE;//to object mode
+      _select_object.visible = true;
+      object_controls.visible = true;
+      console.log(_vertex);
+      _vertex.visible = false;
+      // console.log(_select_vertex);
+      if(_selected){
+        _selected.visible = false;
       }
+      _select_frame.visible = false;
+      _this.scene.remove(_select_edge);
+      _select_edge = new THREE.EdgesHelper( _select_object, 0xffa800 );
+      _this.scene.add(_select_edge);
+    }else if(mode == _mode.TRANSMODE){
+      _state = _mode.TRANSMODE;
     }
   };
 
   this.onkeydown = function(event){
     switch ( event.keyCode ) {
       case 9: // tab
-        _this.mode_switch();
+        if(_select_object !== gridHelper){
+          if(_state == _mode.OBJECTMODE){
+            _this.mode_switch(_mode.EDITMODE);
+          }else if(_state == _mode.EDITMODE){
+            _this.mode_switch(_mode.OBJECTMODE);
+          }
+        }
       break;
 
       case 17: // Ctrl
@@ -268,7 +304,14 @@ THREESESSION.Viewport = function(parameters){
       break;
 
       case 71: // g
-        object_controls.setMode( "translate" );
+        if(_state == _mode.OBJECTMODE){
+          object_controls.setMode( "translate" );
+          // console.log(_state);
+        }else if(_state == _mode.EDITMODE){
+          _this.mode_switch(_mode.TRANSMODE);
+          console.log(_state);
+        }
+        // console.log(_state);
       break;
 
       case 82: // r
