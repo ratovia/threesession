@@ -6,7 +6,6 @@ THREESESSION.Viewport = function(parameters){
   		_radius = 500,
   		_this = this,
       _select_object,
-      _select_frame,
       _select_edge,
       _selected,
       _vertex,
@@ -49,9 +48,9 @@ THREESESSION.Viewport = function(parameters){
   var gridHelper = new THREE.GridHelper( 480,80,0xFF0000,0x2B2B2B);
   this.scene.add( gridHelper );
 
-  var directionalLight = new THREE.DirectionalLight( 0xffffff );
-  directionalLight.position.set( 0.3, 0.7, 0.5 );
-  this.scene.add( directionalLight );
+  var directionalLight1 = new THREE.DirectionalLight( 0xffffff );
+  directionalLight1.position.set( 0.3, 0.7, 0.5 );
+  this.scene.add( directionalLight1 );
   var directionalLight2 = new THREE.DirectionalLight( 0xffffff );
   directionalLight2.position.set( -0.3, -0.7, -0.5 );
   this.scene.add( directionalLight2 );
@@ -81,16 +80,14 @@ THREESESSION.Viewport = function(parameters){
       if(_state == _mode.OBJECTMODE){
         _this.select(intersects[0].object);
       }else if(_state == _mode.EDITMODE){
-        var x1,y1,z1,x2,y2,z2,d,min_d = 10000,min_idx = -1;
-        x1 = intersects[0].point.x;
-        y1 = intersects[0].point.y;
-        z1 = intersects[0].point.z;
-        var vertices = _this.fix_vertices();
+        var d,min_d = 10000,min_idx = -1;
+        var vec1 = new THREE.Vector3();
+        var vec2 = new THREE.Vector3();
+        vec1 = intersects[0].point;
+        var vertices = _this.fix_vertices(_select_object.geometry.clone().vertices);
         for(var i = 0,l = _select_object.geometry.vertices.length;i < l;i++){
-          x2 = vertices[i].x;
-          y2 = vertices[i].y;
-          z2 = vertices[i].z;
-          d = Math.sqrt(Math.pow(Math.floor(x1) - Math.floor(x2),2) + Math.pow(Math.floor(y1) - Math.floor(y2),2) + Math.pow(Math.floor(z1) - Math.floor(z2),2));
+          vec2 = vertices[i];
+          d = Math.sqrt(Math.pow(Math.floor(vec1.x) - Math.floor(vec2.x),2) + Math.pow(Math.floor(vec1.y) - Math.floor(vec2.y),2) + Math.pow(Math.floor(vec1.z) - Math.floor(vec2.z),2));
           if(min_d > d){
             min_d = d;
             min_idx = i;
@@ -99,60 +96,30 @@ THREESESSION.Viewport = function(parameters){
         _select_vertex_idx = min_idx;
         _this.select(_select_object.geometry.vertices[min_idx]);
       }else if(_state == _mode.TRANSMODE){
-        console.log(_selected);
         _selected.geometry.vertices[0].set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z)
         _selected.geometry.verticesNeedUpdate = true;
-        console.log(_select_vertex_idx);
         _select_object.geometry.vertices[_select_vertex_idx].set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z);
         _select_object.geometry.verticesNeedUpdate = true;
-        console.log(_select_frame);
-        _select_frame.geometry.vertices[_select_vertex_idx].set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z);
-        _select_frame.geometry.verticesNeedUpdate = true;
-        console.log(_vertex);
         _select_vertex.set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z);
         _select_vertex.verticesNeedUpdate = true;
         _vertex.geometry.vertices[_select_vertex_idx].set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z);
         _vertex.geometry.verticesNeedUpdate = true;
-        // _select_edge.geometry.vertices[_select_vertex_idx].set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z);
-        // _select_edge.geometry.verticesNeedUpdate = true;
         this.mode_switch(_mode.EDITMODE);
       }
     }
   };
 
-  this.fix_vertices = function(){
-    var geometry = _select_object.geometry.clone();
-    var vertices = geometry.vertices;
+  this.fix_vertices = function(vertices){
     var mat = _select_object.matrix;
     var x,y,z;
+    var vec = new THREE.Vector3();
     for(var i = 0, l = vertices.length;i < l ; i++){
-      x = vertices[i].x;
-      y = vertices[i].y;
-      z = vertices[i].z;
-      vertices[i].x = mat.elements[0] * x + mat.elements[4] * y + mat.elements[8]  * z + mat.elements[12] * 1;
-      vertices[i].y = mat.elements[1] * x + mat.elements[5] * y + mat.elements[9]  * z + mat.elements[13] * 1;
-      vertices[i].z = mat.elements[2] * x + mat.elements[6] * y + mat.elements[10] * z + mat.elements[14] * 1;
+      vec = vertices[i];
+      vertices[i].x = mat.elements[0] * vec.x + mat.elements[4] * vec.y + mat.elements[8]  * vec.z + mat.elements[12] * 1;
+      vertices[i].y = mat.elements[1] * vec.x + mat.elements[5] * vec.y + mat.elements[9]  * vec.z + mat.elements[13] * 1;
+      vertices[i].z = mat.elements[2] * vec.x + mat.elements[6] * vec.y + mat.elements[10] * vec.z + mat.elements[14] * 1;
     }
     return vertices;
-  };
-
-  this.setSize = function () {
-    _width = _container.clientWidth;
-    _height = _container.clientHeight;
-    _this.camera.aspect = _width / _height;
-    _this.camera.updateProjectionMatrix();
-    _this.renderer.setSize( _width, _height );
-    _this.render();
-  };
-
-  this.render = function() {
-    camera_controls.update();
-    _this.renderer.render( _this.scene, _this.camera );
-  };
-
-  this.animate = function() {
-    requestAnimationFrame( _this.animate );
-    _this.render();
   };
 
   this.select = function(obj){
@@ -163,14 +130,10 @@ THREESESSION.Viewport = function(parameters){
         }
         _select_object = obj;
         _select_object.verticesNeedUpdate = true;
-        _select_frame = _this.create_frame(obj);
         _vertex = _this.create_vertex(obj.geometry.vertices);
-        _select_frame.visible = false;
         _vertex.visible = false;
         _select_object.add(_vertex);
-        // _this.scene.add(_select_frame);
         _select_edge = new THREE.EdgesHelper( _select_object, 0xffa800 );
-        console.log(_select_edge);
         _this.scene.add(_select_edge);
         object_controls.attach(_select_object);
         _this.scene.add(object_controls);
@@ -188,7 +151,31 @@ THREESESSION.Viewport = function(parameters){
   };
 
   this.addPrimitive = function(type){
-    var mesh = _this.create_mesh(type);
+    var material,
+        geometry,
+        mesh,
+        name,
+        whitemap,
+        rotation;
+    material = new THREE.MeshPhongMaterial({
+      wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading
+    });
+    if(type === "cube"){
+      geometry = new THREE.BoxGeometry(60,60,60,1,1,1);
+      name = "cube";
+
+    }else if(type === "plane"){
+      geometry = new THREE.PlaneGeometry(120,120,3,3);
+      name = "plane";
+      // TODO rotation
+    }else if(type === "cylinder"){
+      geometry = new THREE.CylinderGeometry(100, 100, 100, 16);
+      meshName = 'cylinder';
+    }else if(type === "sphere"){
+      geometry = new THREE.SphereGeometry(100,16,16);
+      meshName = 'THREE.SphereGeometry';
+    }
+    mesh = new THREE.Mesh(geometry, material);
     _this.scene.add(mesh);
     _this.select(mesh);
     return mesh;
@@ -216,71 +203,28 @@ THREESESSION.Viewport = function(parameters){
     return mesh;
   };
 
-  this.create_frame = function(mesh){
-    var geometry = mesh.geometry.clone();
-    var material = new THREE.MeshBasicMaterial({
-      color : 0x0000ff,wireframe: true
-    });
-    var frame = new THREE.Mesh(geometry,material);
-    return frame;
-  };
-
-  this.create_mesh = function(type){
-    var material,
-        geometry,
-        mesh,
-        name,
-        whitemap,
-        rotation;
-    material = new THREE.MeshPhongMaterial({
-      wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading
-    });
-    if(type === "cube"){
-      geometry = new THREE.BoxGeometry(60,60,60,1,1,1);
-      name = "cube";
-
-    }else if(type === "plane"){
-      geometry = new THREE.PlaneGeometry(120,120,3,3);
-      name = "plane";
-      // TODO rotation
-    }else if(type === "cylinder"){
-      geometry = new THREE.CylinderGeometry(100, 100, 100, 16);
-      meshName = 'cylinder';
-    }else if(type === "sphere"){
-      geometry = new THREE.SphereGeometry(100,16,16);
-      meshName = 'THREE.SphereGeometry';
-    }
-    mesh = new THREE.Mesh(geometry, material);
-    return mesh;
-  };
-
   this.mode_switch = function(mode){
     if(mode == _mode.EDITMODE){
-      console.log(_select_object);
       _select_object.material.wireframe = true;
-      _select_object.material.color.setRGB(1, 0, 0);
+      _select_object.material.color.set(0x00FF00);
       _state = _mode.EDITMODE;// to edit mode
       _select_object.visible = true;
-      _select_frame.visible = true;
       _vertex.visible = true;
       _select_edge.visible = false;
-      object_controls.visible = false;
+      object_controls.detach(_select_object);
     }else if(mode == _mode.OBJECTMODE){
       _select_object.material.wireframe = false;
-      _select_object.material.color.setRGB(1, 1, 1);
+      _select_object.material.color.set(0xFFFFFF);
       _state = _mode.OBJECTMODE;//to object mode
       _select_object.visible = true;
-      object_controls.visible = true;
-      console.log(_vertex);
       _vertex.visible = false;
-      // console.log(_select_vertex);
       if(_selected){
         _selected.visible = false;
       }
-      _select_frame.visible = false;
       _this.scene.remove(_select_edge);
       _select_edge = new THREE.EdgesHelper( _select_object, 0xffa800 );
       _this.scene.add(_select_edge);
+      object_controls.attach(_select_object);
     }else if(mode == _mode.TRANSMODE){
       _state = _mode.TRANSMODE;
     }
@@ -306,12 +250,9 @@ THREESESSION.Viewport = function(parameters){
       case 71: // g
         if(_state == _mode.OBJECTMODE){
           object_controls.setMode( "translate" );
-          // console.log(_state);
         }else if(_state == _mode.EDITMODE){
           _this.mode_switch(_mode.TRANSMODE);
-          console.log(_state);
         }
-        // console.log(_state);
       break;
 
       case 82: // r
@@ -343,4 +284,23 @@ THREESESSION.Viewport = function(parameters){
       break;
   	}
 	};
+
+  this.setSize = function () {
+    _width = _container.clientWidth;
+    _height = _container.clientHeight;
+    _this.camera.aspect = _width / _height;
+    _this.camera.updateProjectionMatrix();
+    _this.renderer.setSize( _width, _height );
+    _this.render();
+  };
+
+  this.render = function() {
+    camera_controls.update();
+    _this.renderer.render( _this.scene, _this.camera );
+  };
+
+  this.animate = function() {
+    requestAnimationFrame( _this.animate );
+    _this.render();
+  };
 }
