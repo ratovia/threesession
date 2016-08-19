@@ -13,4 +13,11 @@
 //= require jquery
 //= require jquery_ujs
 //= require turbolinks
-//= require_tree .
+//= require three.min
+//= require OrbitControls
+//= require Projector
+//= require TransformControls
+//= require Threesession
+//= require App
+//= require Viewport
+//= require Menu

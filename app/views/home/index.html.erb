@@ -2,8 +2,6 @@
 <head>
 	<meta charset="utf-8">
 	<title>Threesession | 3DCG modeling session</title>
-  <link rel="stylesheet" type="text/css" href="css/layout.css">
-	<link rel="stylesheet" type="text/css" href="css/menu.css">
 </head>
 <body>
 	<div id="wrapper">
@@ -55,17 +53,6 @@
 			</ul>
 		</div>
   </div>
-	<!-- library -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-	<script src="js/three.js"></script>
-  <script src="js/OrbitControls.js"></script>
-	<script src="js/Projector.js"></script>
-	<script src="js/TransformControls.js"></script>
-	<!-- script -->
-  <script src="js/Threesession.js"></script>
-	<script src="js/Menu.js"></script>
-  <script src="js/Viewport.js"></script>
-  <!-- ready script -->
-	<script src="js/App.js"></script>
+	<%= javascript_include_tag "application" %>
 </body>
 </html>
