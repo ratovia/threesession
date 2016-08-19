@@ -7,9 +7,8 @@
     viewport.animate();
 		viewport.setSize();
 
-
-
-
+      
+      
     $('#cube').on('click', function() {
       viewport.addPrimitive("cube");
     });
