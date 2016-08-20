@@ -6,4 +6,9 @@ class HomeControllerTest < ActionController::TestCase
     assert_response :success
   end
 
+  test "index view" do
+    get :index
+    assert_select 'title', "Threesession | 3DCG modeling session"
+
+  end
 end
