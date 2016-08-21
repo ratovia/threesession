@@ -1,3 +1,4 @@
+//=require spec_heler
 describe("Array", function(){
   describe("#map", function(){
     it("return function applied array", function() {
