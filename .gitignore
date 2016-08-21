@@ -10,7 +10,7 @@
 /.idea
 /.idea/*
 .idea/*
-
+.idea/workspace.xml
 *.xml
 
 !/codeStyleSettings.xml
