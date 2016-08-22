@@ -37,6 +37,20 @@ Rails.application.configure do
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
+  +require 'webmock/rspec'
+  Fastladder::Application.configure do
+    # Settings specified here will take precedence over those in config/application.rb
+
+    (...)
+
+    # Print deprecation notices to the stderr
+    config.active_support.deprecation = :stderr
+    +  WebMock.disable_net_connect!(:allow_localhost => true)
+  end
+  +
+  +require 'webmock/rspec'
+  +WebMock.disable_net_connect!(:allow_localhost => true)
+
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 end

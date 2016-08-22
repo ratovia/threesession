@@ -6,6 +6,28 @@
 
 # Ignore bundler config.
 /.bundle
+#Ignore idea config
+/.idea
+/.idea/*
+.idea/*
+.idea/workspace.xml
+*.xml
+
+!/codeStyleSettings.xml
+!/copyright/*.xml
+!/fileColors.xml
+!/encodings.xml
+!/gradle.xml
+!/runConfigurations/*.xml
+
+!/inspectionProfiles/*.xml
+/inspectionProfiles/profiles_settings.xml
+
+!/scopes/*.xml
+/scopes/scope_settings.xml
+
+!/templateLanguages.xml
+!/vcs.xml
 
 # Ignore the default SQLite database.
 /db/*.sqlite3
