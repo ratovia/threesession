@@ -1,4 +1,4 @@
-(function(){
+{
 	// // Ready
   $(document).ready(function(){
     var menu = new THREESESSION.Menu();
@@ -42,4 +42,4 @@
 			viewport.setSize();
 		},false);
 	});
-}());
+}
