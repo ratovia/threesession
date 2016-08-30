@@ -150,4 +150,9 @@
     <LOAD_PATH number="0" />
     <I18N_FOLDERS number="1" string0="$MODULE_DIR$/config/locales" />
   </component>
+  <component name="RailwaysModuleConfiguration">
+    <option name="environment" value="development" />
+    <option name="autoUpdate" value="true" />
+    <option name="liveActionHighlighting" value="false" />
+  </component>
 </module>

@@ -1,6 +1,9 @@
 class SessionsController < ApplicationController
-  def index
+  def new
+    
   end
-  def create
+
+  def index
+    @user_name = params[:user_name];
   end
 end
