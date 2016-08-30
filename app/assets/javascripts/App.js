@@ -1,4 +1,4 @@
-(function(){
+{
 	// // Ready
   $(document).ready(function(){
     var menu = new THREESESSION.Menu();
@@ -22,7 +22,7 @@
       viewport.addPrimitive("sphere");
     });
 
-    viewport.renderer.domElement.addEventListener('mousedown',function(event){
+    viewport.renderer.domElement.addEventListener('mousedown',function(){
       viewport.picking();
     });
 
@@ -38,8 +38,8 @@
       viewport.onkeyup(event);
     },false);
 
-		window.addEventListener('resize',function(event){
+		window.addEventListener('resize',function(){
 			viewport.setSize();
 		},false);
 	});
-}());
+}

@@ -1,11 +1,10 @@
-THREESESSION.Viewport = function(parameters){
+THREESESSION.Viewport = function(){
   //
-  var _container = document.getElementById('main'),
-      _width = _container.clientWidth,
+  const _container = document.getElementById('main');
+  const _this = this;
+  var _width = _container.clientWidth,
   		_height = _container.clientHeight,
-  		_radius = 500,
-  		_this = this,
-      _select_object,
+  		_select_object,
       _select_edge,
       _selected,
       _vertex,
@@ -19,7 +18,6 @@ THREESESSION.Viewport = function(parameters){
       _state = _mode.OBJECTMODE,
       _mouse = new THREE.Vector2(),
   		SHADOW_MAP_WIDTH = 2048,
-      PARTICLE_SIZE = 20,
   		SHADOW_MAP_HEIGHT = 1024;
   //
   // this.camera = new THREE.PerspectiveCamera(30, _width / _height,1,10000);
@@ -72,7 +70,7 @@ THREESESSION.Viewport = function(parameters){
     _mouse.y = -(y / _height) * 2 + 1;
   };
 
-  this.picking = function(event){
+  this.picking = function(){
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(_mouse,_this.camera);
     var intersects = raycaster.intersectObjects(_this.scene.children);
@@ -81,9 +79,8 @@ THREESESSION.Viewport = function(parameters){
         _this.select(intersects[0].object);
       }else if(_state == _mode.EDITMODE){
         var d,min_d = 10000,min_idx = -1;
-        var vec1 = new THREE.Vector3();
+        var vec1 = intersects[0].point;
         var vec2 = new THREE.Vector3();
-        vec1 = intersects[0].point;
         var vertices = _this.fix_vertices(_select_object.geometry.clone().vertices);
         for(var i = 0,l = _select_object.geometry.vertices.length;i < l;i++){
           vec2 = vertices[i];
@@ -96,7 +93,7 @@ THREESESSION.Viewport = function(parameters){
         _select_vertex_idx = min_idx;
         _this.select(_select_object.geometry.vertices[min_idx]);
       }else if(_state == _mode.TRANSMODE){
-        _selected.geometry.vertices[0].set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z)
+        _selected.geometry.vertices[0].set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z);
         _selected.geometry.verticesNeedUpdate = true;
         _select_object.geometry.vertices[_select_vertex_idx].set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z);
         _select_object.geometry.verticesNeedUpdate = true;
@@ -111,7 +108,6 @@ THREESESSION.Viewport = function(parameters){
 
   this.fix_vertices = function(vertices){
     var mat = _select_object.matrix;
-    var x,y,z;
     var vec = new THREE.Vector3();
     for(var i = 0, l = vertices.length;i < l ; i++){
       vec = vertices[i];
@@ -153,27 +149,19 @@ THREESESSION.Viewport = function(parameters){
   this.addPrimitive = function(type){
     var material,
         geometry,
-        mesh,
-        name,
-        whitemap,
-        rotation;
+        mesh;
     material = new THREE.MeshPhongMaterial({
       wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading
     });
     if(type === "cube"){
       geometry = new THREE.BoxGeometry(60,60,60,1,1,1);
-      name = "cube";
-
     }else if(type === "plane"){
       geometry = new THREE.PlaneGeometry(120,120,3,3);
-      name = "plane";
       // TODO rotation
     }else if(type === "cylinder"){
       geometry = new THREE.CylinderGeometry(100, 100, 100, 16);
-      meshName = 'cylinder';
     }else if(type === "sphere"){
       geometry = new THREE.SphereGeometry(100,16,16);
-      meshName = 'THREE.SphereGeometry';
     }
     mesh = new THREE.Mesh(geometry, material);
     _this.scene.add(mesh);
@@ -187,8 +175,7 @@ THREESESSION.Viewport = function(parameters){
     });
     var particle = new THREE.Geometry();
     particle.vertices.push(vertex);
-    var mesh = new THREE.Points(particle,material);
-    return mesh;
+    return new THREE.Points(particle,material);
   };
 
   this.create_vertex = function(vertices){
@@ -199,8 +186,7 @@ THREESESSION.Viewport = function(parameters){
     for(var i = 0,l = vertices.length; i < l; i++){
       particle.vertices.push(vertices[i]);
     }
-    var mesh = new THREE.Points(particle,material);
-    return mesh;
+    return new THREE.Points(particle,material);
   };
 
   this.mode_switch = function(mode){
@@ -303,6 +289,7 @@ THREESESSION.Viewport = function(parameters){
     requestAnimationFrame( _this.animate );
     _this.render();
   };
-}
+};
+
 
 
