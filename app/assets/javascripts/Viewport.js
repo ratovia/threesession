@@ -62,6 +62,26 @@ THREESESSION.Viewport = function(){
     _this.select(mesh);
   };
 
+  this.getjson = function(){
+    var mesh = new THREE.Object3D();
+    var material = new THREE.MeshPhongMaterial({
+      wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading
+    });
+    $.ajax({
+      url: "/load",
+      type: "get"
+    }).done(function (aa) {
+      var loader = new THREE.JSONLoader();
+      var model = loader.parse( aa );
+
+      mesh = new THREE.Mesh( model.geometry, material );
+      console.log(mesh);
+      _this.scene.add(mesh);
+    }).fail(function () {
+      console.log("fail");
+    });
+  };
+  
   this.onmousemove = function(event){
     var rect = event.target.getBoundingClientRect();
     var x =  event.clientX - rect.left;

@@ -8,4 +8,9 @@ class SessionsController < ApplicationController
     @user = User.create(name: @user_name)
     session[:user_id] = @user.id
   end
+
+  def loadjson
+    @json = File.read("start.json")
+    render json: @json
+  end
 end
