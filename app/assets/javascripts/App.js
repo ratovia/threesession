@@ -2,11 +2,11 @@
 	// // Ready
   $(document).ready(function(){
     var menu = new THREESESSION.Menu();
-		var viewport = new THREESESSION.Viewport();
-    viewport.set_defoult_objects();
+    var viewport = new THREESESSION.Viewport();
+    // viewport.set_defoult_objects();
     viewport.animate();
 		viewport.setSize();
-
+    viewport.getjson();
       
       
     $('#cube').on('click', function() {
