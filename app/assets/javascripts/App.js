@@ -7,7 +7,10 @@
     viewport.animate();
 		viewport.setSize();
     viewport.getjson();
-      
+
+    setInterval(function(){
+      viewport.getjson();
+    },10000);
       
     $('#cube').on('click', function() {
       viewport.addPrimitive("cube");

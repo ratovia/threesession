@@ -43,6 +43,8 @@ THREESESSION.Viewport = function(){
   this.scene = new THREE.Scene();
   this.scene.add(this.camera);
 
+
+
   var gridHelper = new THREE.GridHelper( 480,80,0xFF0000,0x2B2B2B);
   this.scene.add( gridHelper );
 
@@ -52,6 +54,9 @@ THREESESSION.Viewport = function(){
   var directionalLight2 = new THREE.DirectionalLight( 0xffffff );
   directionalLight2.position.set( -0.3, -0.7, -0.5 );
   this.scene.add( directionalLight2 );
+
+  this.object_group = new THREE.Group();
+  this.scene.add(this.object_group);
 
   /////////////////////////////////////////////////////
   //////////////// public method //////////////////////
@@ -63,25 +68,35 @@ THREESESSION.Viewport = function(){
   };
 
   this.getjson = function(){
-    var mesh = new THREE.Object3D();
-    var material = new THREE.MeshPhongMaterial({
-      wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading
-    });
     $.ajax({
       url: "/load",
       type: "get"
     }).done(function (aa) {
+      var mesh = new THREE.Object3D();
+      var material = new THREE.MeshPhongMaterial({
+        wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading
+      });
       var loader = new THREE.JSONLoader();
       var model = loader.parse( aa );
-
       mesh = new THREE.Mesh( model.geometry, material );
-      console.log(mesh);
-      _this.scene.add(mesh);
+      _this.scene.remove(_this.object_group);
+      _this.removeall(_this.object_group);
+      _this.object_group.add(mesh);
+      _this.select(mesh);
+      _this.scene.add(_this.object_group);
     }).fail(function () {
-      console.log("fail");
+      console.log("Ajax getjson failed");
     });
   };
-  
+
+  this.removeall = function(group){
+    console.log(group.children.length);
+    for(var i = group.children.length - 1;i >= 0; i-- ){
+      group.remove(group.children[i]);
+      console.log(group);
+    }
+  };
+
   this.onmousemove = function(event){
     var rect = event.target.getBoundingClientRect();
     var x =  event.clientX - rect.left;
@@ -93,7 +108,7 @@ THREESESSION.Viewport = function(){
   this.picking = function(){
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(_mouse,_this.camera);
-    var intersects = raycaster.intersectObjects(_this.scene.children);
+    var intersects = raycaster.intersectObjects(_this.object_group.children);
     if(intersects.length > 0){
       if(_state == _mode.OBJECTMODE){
         _this.select(intersects[0].object);
@@ -142,7 +157,7 @@ THREESESSION.Viewport = function(){
     if(_state == _mode.OBJECTMODE){//obj
       if(_select_object !== obj){//新しく選択されたら
         if(_select_object){//元の選択を消す
-          _this.scene.remove(_select_edge);
+          _this.object_group.remove(_select_edge);
         }
         _select_object = obj;
         _select_object.verticesNeedUpdate = true;
@@ -150,9 +165,9 @@ THREESESSION.Viewport = function(){
         _vertex.visible = false;
         _select_object.add(_vertex);
         _select_edge = new THREE.EdgesHelper( _select_object, 0xffa800 );
-        _this.scene.add(_select_edge);
+        _this.object_group.add(_select_edge);
         object_controls.attach(_select_object);
-        _this.scene.add(object_controls);
+        _this.object_group.add(object_controls);
       }
     }else if(_state == _mode.EDITMODE){//edit
       if(_select_vertex !== obj){
@@ -184,7 +199,7 @@ THREESESSION.Viewport = function(){
       geometry = new THREE.SphereGeometry(100,16,16);
     }
     mesh = new THREE.Mesh(geometry, material);
-    _this.scene.add(mesh);
+    _this.object_group.add(mesh);
     _this.select(mesh);
     return mesh;
   };
@@ -227,9 +242,9 @@ THREESESSION.Viewport = function(){
       if(_selected){
         _selected.visible = false;
       }
-      _this.scene.remove(_select_edge);
+      _this.object_group.remove(_select_edge);
       _select_edge = new THREE.EdgesHelper( _select_object, 0xffa800 );
-      _this.scene.add(_select_edge);
+      _this.object_group.add(_select_edge);
       object_controls.attach(_select_object);
     }else if(mode == _mode.TRANSMODE){
       _state = _mode.TRANSMODE;
