@@ -72,13 +72,12 @@ THREESESSION.Viewport = function(){
       url: "/load",
       type: "get"
     }).done(function (aa) {
-      var mesh = new THREE.Object3D();
       var material = new THREE.MeshPhongMaterial({
         wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading
       });
       var loader = new THREE.JSONLoader();
       var model = loader.parse( aa );
-      mesh = new THREE.Mesh( model.geometry, material );
+      var mesh = new THREE.Mesh( model.geometry, material );
       _this.scene.remove(_this.object_group);
       _this.removeall(_this.object_group);
       _this.object_group.add(mesh);
@@ -86,6 +85,18 @@ THREESESSION.Viewport = function(){
       _this.scene.add(_this.object_group);
     }).fail(function () {
       console.log("Ajax getjson failed");
+    });
+  };
+
+  this.postedit = function(target, operation){
+    $.ajax({
+      url: "/post",
+      type: "post",
+      data: "aaa"
+    }).done(function(){
+      console.log("ajax success");
+    }).fail(function(){
+      console.log("ajax failed");
     });
   };
 

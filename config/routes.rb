@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   root 'sessions#new'
   get 'session' => 'sessions#index'
   get 'load' => 'sessions#loadjson'
-
+  post 'post' => 'sessions#post'
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

@@ -13,4 +13,9 @@ class SessionsController < ApplicationController
     @json = File.read("start.json")
     render json: @json
   end
+
+  def post
+    @target = "aaa"
+    @operation = "bbb"
+  end
 end
