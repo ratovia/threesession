@@ -10,8 +10,8 @@ class SessionsController < ApplicationController
   end
 
   def loadjson
-    @json = File.read("start.json")
-    render json: @json
+    @json= File.read("start3.json")
+    render json: json
   end
 
   def post

@@ -10,7 +10,7 @@
 
     setInterval(function(){
       viewport.getjson();
-    },10000);
+    },20000);
       
     $('#cube').on('click', function() {
       viewport.addPrimitive("cube");
