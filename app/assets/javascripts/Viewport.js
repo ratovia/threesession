@@ -76,11 +76,6 @@ THREESESSION.Viewport = function(){
         wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading
       });
       var loader = new THREE.JSONLoader();
-
-      console.log(aa);
-　　　　
-      var data = new Array(aa.json1);
-      console.log(data);
       var model = loader.parse( aa.geometries[0].data );
       var model2 = loader.parse(aa.geometries[1].data);
       var mesh2 = new THREE.Mesh(model2.geometry, material);
@@ -96,11 +91,11 @@ THREESESSION.Viewport = function(){
     });
   };
 
-  this.postedit = function(target, operation){
+  this.postedit = function(target, operation,value){
     $.ajax({
       url: "/post",
       type: "post",
-      data: "aaa"
+      data: {"operation": operation,"target": target,"value":value }
     }).done(function(){
       console.log("ajax success");
     }).fail(function(){

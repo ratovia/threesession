@@ -11,11 +11,19 @@ class SessionsController < ApplicationController
 
   def loadjson
     @json= File.read("start3.json")
-    render json: json
+    render json: @json
   end
 
   def post
-    @target = "aaa"
-    @operation = "bbb"
+    @operation = params[:operation]
+    @target = params[:target]
+    @value = params[:value]
+
+
+
+
+
+    Edit.create(:operation => @operation, :target => @target, :value => @value)
+
   end
 end
