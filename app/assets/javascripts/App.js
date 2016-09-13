@@ -12,7 +12,7 @@
       viewport.getjson();
     },20000);
 
-    viewport.postedit("trans","geometry",10);
+    viewport.postedit("geometry","trans",10);
     $('#cube').on('click', function() {
       viewport.addPrimitive("cube");
     });
