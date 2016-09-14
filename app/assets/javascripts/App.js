@@ -11,8 +11,7 @@
     setInterval(function(){
       viewport.getjson();
     },20000);
-
-    viewport.postedit("geometry","trans",10);
+    
     $('#cube').on('click', function() {
       viewport.addPrimitive("cube");
     });

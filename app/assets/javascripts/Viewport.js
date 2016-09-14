@@ -91,16 +91,20 @@ THREESESSION.Viewport = function(){
     });
   };
 
-  this.postedit = function(target, operation,value){
-    $.ajax({
-      url: "/post",
-      type: "post",
-      data: {"operation": operation,"target": target,"value":value }
-    }).done(function(){
-      console.log("ajax success");
-    }).fail(function(){
-      console.log("ajax failed");
-    });
+  this.postedit = function(operation,uuid,target,value){
+    if(operation == "trans"){
+      var val = "{" + value.x + "," + value.y + "," + value.z + "}";
+      $.ajax({
+        url: "/post",
+        type: "post",
+        data: {"operation": operation,"uuid": uuid,"target": target,"value": val }
+      }).done(function(){
+        console.log("ajax success");
+      }).fail(function(){
+        console.log("ajax failed");
+      });
+    }
+
   };
 
   this.removeall = function(group){
@@ -151,6 +155,7 @@ THREESESSION.Viewport = function(){
         _vertex.geometry.vertices[_select_vertex_idx].set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z);
         _vertex.geometry.verticesNeedUpdate = true;
         this.mode_switch(_mode.EDITMODE);
+        this.postedit("trans",_select_object.uuid,_select_vertex_idx,intersects[0].point);
       }
     }
   };

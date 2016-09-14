@@ -16,14 +16,16 @@ class SessionsController < ApplicationController
 
   def post
     @operation = params[:operation]
+    @uuid = params[:uuid]
     @target = params[:target]
     @value = params[:value]
+    puts(@value)
 
 
 
 
 
-    Edit.create(:operation => @operation, :target => @target, :value => @value)
+    Edit.create(:operation => @operation, :uuid => @uuid, :target => @target, :value => @value)
 
   end
 end
