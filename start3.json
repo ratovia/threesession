@@ -6,6 +6,31 @@
     },
     "materials":[],
     "textures":[],
+
+    "images":[],
+    "animations":[{
+        "name":"default",
+        "fps":24,
+        "tracks":[]
+    }],
+    "object":{
+        "children":[{
+            "name":"Cube",
+            "uuid":"F29D1AC4-D789-3D8E-BAB5-59DC1B758FE2",
+            "matrix":[-1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
+            "visible":true,
+            "type":"Mesh"
+        },{
+            "name":"Cylinder",
+            "uuid":"5267BF4F-D758-3B25-9F2C-ED4EFC102E6F",
+            "matrix":[-1,0,0,0,0,0,1,0,0,1,0,0,0,0,3.1462,1],
+            "visible":true,
+            "type":"Mesh"
+        }],
+        "type":"Scene",
+        "matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+        "uuid":"9D73C9AE-06F7-4F28-989A-9B8CCBD47A09"
+    },
     "geometries":[{
         "data":{
             "metadata":{
@@ -42,35 +67,5 @@
         },
         "type":"Geometry",
         "uuid":"65D46590-7E71-3068-9851-61F71FB00780"
-    }],
-    "images":[],
-    "animations":[{
-        "name":"default",
-        "fps":24,
-        "tracks":[]
-    }],
-    "object":{
-        "children":[{
-            "name":"Cube",
-            "uuid":"F29D1AC4-D789-3D8E-BAB5-59DC1B758FE2",
-            "matrix":[-1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
-            "visible":true,
-            "type":"Mesh",
-            "castShadow":true,
-            "receiveShadow":true,
-            "geometry":"65D46590-7E71-3068-9851-61F71FB00780"
-        },{
-            "name":"Cylinder",
-            "uuid":"5267BF4F-D758-3B25-9F2C-ED4EFC102E6F",
-            "matrix":[-1,0,0,0,0,0,1,0,0,1,0,0,0,0,3.1462,1],
-            "visible":true,
-            "type":"Mesh",
-            "castShadow":false,
-            "receiveShadow":false,
-            "geometry":"60050563-2B60-3C16-A1E2-1B17F0B6EB83"
-        }],
-        "type":"Scene",
-        "matrix":[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
-        "uuid":"9D73C9AE-06F7-4F28-989A-9B8CCBD47A09"
-    }
+    }]
 }

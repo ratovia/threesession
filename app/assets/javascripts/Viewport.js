@@ -76,15 +76,16 @@ THREESESSION.Viewport = function(){
         wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading
       });
       var loader = new THREE.JSONLoader();
+      console.log(aa);
       var model = loader.parse( aa.geometries[0].data );
-      var model2 = loader.parse(aa.geometries[1].data);
-      var mesh2 = new THREE.Mesh(model2.geometry, material);
+      // var model2 = loader.parse(aa.geometries[1].data);
+      // var mesh2 = new THREE.Mesh(model2.geometry, material);
       var mesh = new THREE.Mesh( model.geometry, material );
       _this.scene.remove(_this.object_group);
       _this.removeall(_this.object_group);
       _this.object_group.add(mesh);
       _this.select(mesh);
-      _this.object_group.add(mesh2);
+      // _this.object_group.add(mesh2);
       _this.scene.add(_this.object_group);
     }).fail(function () {
       console.log("Ajax getjson failed");

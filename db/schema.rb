@@ -22,9 +22,20 @@ ActiveRecord::Schema.define(version: 20160912185731) do
   end
 
   create_table "snaps", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
-    t.json     "json"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "faces"
+    t.integer  "version"
+    t.integer  "normals"
+    t.integer  "vertices"
+    t.integer  "uvs"
+    t.string   "name"
+    t.string   "uuid"
+    t.text     "matrix",        limit: 65535
+    t.text     "faces_data",    limit: 65535
+    t.text     "normals_data",  limit: 65535
+    t.text     "vertices_data", limit: 65535
+    t.text     "uvs_data",      limit: 65535
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
   end
 
   create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
