@@ -114,6 +114,5 @@ class SessionsController < ApplicationController
 
 
     Edit.create(:operation => @operation, :uuid => @uuid, :target => @target, :value => @value)
-
   end
 end

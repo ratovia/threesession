@@ -81,6 +81,11 @@ THREESESSION.Viewport = function(){
       // var model2 = loader.parse(aa.geometries[1].data);
       // var mesh2 = new THREE.Mesh(model2.geometry, material);
       var mesh = new THREE.Mesh( model.geometry, material );
+      console.log(mesh);
+      mesh.uuid = aa.geometries[0].uuid;
+      console.log(aa.geometries[0].uuid);
+      console.log(mesh.uuid);
+
       _this.scene.remove(_this.object_group);
       _this.removeall(_this.object_group);
       _this.object_group.add(mesh);
@@ -94,7 +99,7 @@ THREESESSION.Viewport = function(){
 
   this.postedit = function(operation,uuid,target,value){
     if(operation == "trans"){
-      var val = "{" + value.x + "," + value.y + "," + value.z + "}";
+      var val = value.x + "," + value.y + "," + value.z;
       $.ajax({
         url: "/post",
         type: "post",
