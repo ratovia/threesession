@@ -71,26 +71,36 @@ THREESESSION.Viewport = function(){
     $.ajax({
       url: "/load",
       type: "get"
-    }).done(function (aa) {
+    }).done(function (json) {
       var material = new THREE.MeshPhongMaterial({
         wireframe:false,color:0xFFFFFF,shading: THREE.SmoothShading
       });
       var loader = new THREE.JSONLoader();
-      console.log(aa);
-      var model = loader.parse( aa.geometries[0].data );
-      // var model2 = loader.parse(aa.geometries[1].data);
-      // var mesh2 = new THREE.Mesh(model2.geometry, material);
-      var mesh = new THREE.Mesh( model.geometry, material );
-      console.log(mesh);
-      mesh.uuid = aa.geometries[0].uuid;
-      console.log(aa.geometries[0].uuid);
-      console.log(mesh.uuid);
-
       _this.scene.remove(_this.object_group);
       _this.removeall(_this.object_group);
-      _this.object_group.add(mesh);
-      _this.select(mesh);
-      // _this.object_group.add(mesh2);
+      for(var i = 0, l = json.geometries.length; i< l;i++){
+        for(var i2 = 0,l2 = json.edit.length;i2 < l2 ; i2++){
+          if(json.geometries[i].uuid == json.edit[i2].uuid){
+            if(json.edit[i2].operation == "trans"){
+              var value_array = json.edit[i2].value.split(',');
+              for(var i3 = 0; i3 < 3;i3++){
+                json.geometries[i].data.vertices[3 * parseInt(json.edit[i2].target) + i3] = parseFloat(value_array[i3]);
+              }
+              json.geometries.verticesNeedUpdate = true;
+            }
+          }
+        }
+        var model = loader.parse(json.geometries[i].data);
+        var mesh = new THREE.Mesh(model.geometry, material);
+        mesh.uuid = json.geometries[0].uuid;
+        _this.object_group.add(mesh);
+        if(_select_object && _select_object.uuid == mesh.uuid){
+          var state = _state;
+          _this.mode_switch(_mode.OBJECTMODE);
+          _this.select(mesh);
+          _this.mode_switch(state);
+        }
+      }
       _this.scene.add(_this.object_group);
     }).fail(function () {
       console.log("Ajax getjson failed");
@@ -114,7 +124,6 @@ THREESESSION.Viewport = function(){
   };
 
   this.removeall = function(group){
-    console.log(group.children.length);
     for(var i = group.children.length - 1;i >= 0; i-- ){
       group.remove(group.children[i]);
       // console.log(group);

@@ -73,6 +73,19 @@ class SessionsController < ApplicationController
     # puts @array2
 
 
+    @edit = Edit.all
+    @array3 = []
+
+    @edit.each do |edit|
+      @hash4 = {
+        :id => edit.id,
+        :operation => edit.operation,
+        :uuid => edit.uuid,
+        :target => edit.target,
+        :value => edit.value
+      }
+      @array3.push(@hash4)
+    end
 
     @hash3 = {
       :matadata => {
@@ -94,7 +107,10 @@ class SessionsController < ApplicationController
         :matrix => [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
         :uuid => '9D73C9AE-06F7-4F28-989A-9B8CCBD47A09'
       },
-      :geometries => @array2
+      :geometries => @array2,
+      :edit => @array3
+
+
     }
 
     @data = JSON.generate(@hash3)

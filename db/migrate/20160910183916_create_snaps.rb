@@ -14,6 +14,7 @@ class CreateSnaps < ActiveRecord::Migration
       t.text :vertices_data
       t.text :uvs_data
 
+
       t.timestamps null: false
     end
   end
