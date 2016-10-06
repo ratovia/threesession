@@ -11,6 +11,9 @@
     setInterval(function(){
       viewport.getjson();
     },20000);
+
+    setInterval(function(){
+    },5000);
     
     $('#cube').on('click', function() {
       viewport.addPrimitive("cube");

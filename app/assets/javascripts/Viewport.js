@@ -58,6 +58,14 @@ THREESESSION.Viewport = function(){
   this.object_group = new THREE.Group();
   this.scene.add(this.object_group);
 
+  var materialk = new THREE.MeshPhongMaterial({
+    wireframe:false,color:0xFF0000,shading: THREE.SmoothShading,
+    transparent: true,opacity:0.0
+  });
+  var plane = new THREE.PlaneGeometry(2000,2000,1,1);
+  var intersect_object = new THREE.Mesh(plane,materialk);
+  this.scene.add(intersect_object);
+
   /////////////////////////////////////////////////////
   //////////////// public method //////////////////////
   /////////////////////////////////////////////////////
@@ -115,9 +123,9 @@ THREESESSION.Viewport = function(){
         type: "post",
         data: {"operation": operation,"uuid": uuid,"target": target,"value": val }
       }).done(function(){
-        console.log("ajax success");
+        console.log("post success");
       }).fail(function(){
-        console.log("ajax failed");
+        console.log("post failed");
       });
     }
 
@@ -126,7 +134,6 @@ THREESESSION.Viewport = function(){
   this.removeall = function(group){
     for(var i = group.children.length - 1;i >= 0; i-- ){
       group.remove(group.children[i]);
-      // console.log(group);
     }
   };
 
@@ -141,39 +148,50 @@ THREESESSION.Viewport = function(){
   this.picking = function(){
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(_mouse,_this.camera);
-    var intersects = raycaster.intersectObjects(_this.object_group.children);
-    if(intersects.length > 0){
-      if(_state == _mode.OBJECTMODE){
+
+    if(_state == _mode.OBJECTMODE){
+      var intersects = raycaster.intersectObjects(_this.object_group.children);
+      if(intersects.length > 0) {
         _this.select(intersects[0].object);
-      }else if(_state == _mode.EDITMODE){
-        var d,min_d = 10000,min_idx = -1;
+      }
+    }else if(_state == _mode.EDITMODE){
+      var intersects = raycaster.intersectObjects(_this.object_group.children);
+      if(intersects.length > 0) {
+        var d, min_d = 10000, min_idx = -1;
         var vec1 = intersects[0].point;
         var vec2 = new THREE.Vector3();
         var vertices = _this.fix_vertices(_select_object.geometry.clone().vertices);
-        for(var i = 0,l = _select_object.geometry.vertices.length;i < l;i++){
+        for (var i = 0, l = _select_object.geometry.vertices.length; i < l; i++) {
           vec2 = vertices[i];
-          d = Math.sqrt(Math.pow(Math.floor(vec1.x) - Math.floor(vec2.x),2) + Math.pow(Math.floor(vec1.y) - Math.floor(vec2.y),2) + Math.pow(Math.floor(vec1.z) - Math.floor(vec2.z),2));
-          if(min_d > d){
+          d = Math.sqrt(Math.pow(Math.floor(vec1.x) - Math.floor(vec2.x), 2) + Math.pow(Math.floor(vec1.y) - Math.floor(vec2.y), 2) + Math.pow(Math.floor(vec1.z) - Math.floor(vec2.z), 2));
+          if (min_d > d) {
             min_d = d;
             min_idx = i;
           }
         }
         _select_vertex_idx = min_idx;
         _this.select(_select_object.geometry.vertices[min_idx]);
-      }else if(_state == _mode.TRANSMODE){
-        _selected.geometry.vertices[0].set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z);
-        _selected.geometry.verticesNeedUpdate = true;
-        _select_object.geometry.vertices[_select_vertex_idx].set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z);
+      }
+    }else if(_state == _mode.TRANSMODE){
+      var intersects = raycaster.intersectObjects(_this.scene.children);
+      if(intersects.length > 0) {
+        var x = intersects[0].point.x;
+        var y = intersects[0].point.y;
+        var z = intersects[0].point.z;
+        _selected.geometry.vertices[0].set(x,y,z);
+        _select_object.geometry.vertices[_select_vertex_idx].set(x,y,z);
+        _vertex.geometry.vertices[_select_vertex_idx].set(x,y,z);
+        _select_vertex.set(x,y,z);
         _select_object.geometry.verticesNeedUpdate = true;
-        _select_vertex.set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z);
-        _select_vertex.verticesNeedUpdate = true;
-        _vertex.geometry.vertices[_select_vertex_idx].set(intersects[0].point.x, intersects[0].point.y,intersects[0].point.z);
+        _selected.geometry.verticesNeedUpdate = true;
         _vertex.geometry.verticesNeedUpdate = true;
+        _select_vertex.verticesNeedUpdate = true;
         this.mode_switch(_mode.EDITMODE);
         this.postedit("trans",_select_object.uuid,_select_vertex_idx,intersects[0].point);
       }
     }
   };
+
 
   this.fix_vertices = function(vertices){
     var mat = _select_object.matrix;
@@ -351,9 +369,27 @@ THREESESSION.Viewport = function(){
 
   this.render = function() {
     camera_controls.update();
+    _this.intersecter();
     _this.renderer.render( _this.scene, _this.camera );
   };
+  
+  this.intersecter = function(){
+    // var im = intersect_object.matrix.clone();
+    var sm = new THREE.Matrix4().set(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+    var cm = _this.camera.matrixWorld.clone();
+    cm.elements[12] = 0;
+    cm.elements[13] = 0;
+    cm.elements[14] = 0;
+    nm = sm.multiply(cm);
 
+    intersect_object.matrixNeedsUpdate = true;
+    intersect_object.matrixAutoUpdate = false;
+    intersect_object.matrix = nm;
+    // console.log(intersect_object.matrix);
+    // console.log("nm");
+    // console.log(nm);
+
+  };
   this.animate = function() {
     requestAnimationFrame( _this.animate );
     _this.render();
