@@ -148,14 +148,14 @@ THREESESSION.Viewport = function(){
   this.picking = function(){
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(_mouse,_this.camera);
-
+    var intersects;
     if(_state == _mode.OBJECTMODE){
-      var intersects = raycaster.intersectObjects(_this.object_group.children);
+      intersects = raycaster.intersectObjects(_this.object_group.children);
       if(intersects.length > 0) {
         _this.select(intersects[0].object);
       }
     }else if(_state == _mode.EDITMODE){
-      var intersects = raycaster.intersectObjects(_this.object_group.children);
+      intersects = raycaster.intersectObjects(_this.object_group.children);
       if(intersects.length > 0) {
         var d, min_d = 10000, min_idx = -1;
         var vec1 = intersects[0].point;
@@ -173,7 +173,7 @@ THREESESSION.Viewport = function(){
         _this.select(_select_object.geometry.vertices[min_idx]);
       }
     }else if(_state == _mode.TRANSMODE){
-      var intersects = raycaster.intersectObjects(_this.scene.children);
+      intersects = raycaster.intersectObjects(_this.scene.children);
       if(intersects.length > 0) {
         var x = intersects[0].point.x;
         var y = intersects[0].point.y;
