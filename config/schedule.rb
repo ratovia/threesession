@@ -18,6 +18,8 @@
 # end
 
 # Learn more: http://github.com/javan/whenever
+env :PATH, ENV['PATH']
+env :GEM_PATH, ENV['GEM_PATH']
 set :environment ,:development
 every 1.minute do
   runner "Makesnap.make_snap"

@@ -1,32 +1,25 @@
 require "#{Rails.root}/app/models/snap"
 require "#{Rails.root}/app/models/edit"
-
 class Makesnap
   def self.make_snap
-    @edit = Edit.all
+    edit = Edit.all
 
-    @edit.each do |edit|
-      @snap = Snap.find_by(uuid: edit.uuid)
+    edit.each do |data|
+      snap = Snap.find_by(uuid: data.uuid)
 
-      if edit.operation == 'trans'
+      if data.operation == 'edit'
         vertices_array = []
-        @snap.vertices_data.split(',').each do |data|
-          vertices_array.push(data.to_i)
-        end
-          p vertices_array
+        vertices_array += snap.vertices_data.split(',').map(&:to_i)
         value_array = []
-        edit.value.split(',').each do |data|
-          value_array.push(data.to_i)
-        end
-          p value_array
+        value_array += data.value.split(',').map(&:to_i)
+
         3.times do |i|
-          vertices_array[edit.target.to_i * 3 + i] = value_array[i]
+          vertices_array[data.target.to_i * 3 + i] = value_array[i]
         end
-          p vertices_array
-        @snap.vertices_data = vertices_array.join(',')
-          p @snap.vertices_data
-        @snap.save
-        edit.destroy
+
+        snap.vertices_data = vertices_array.join(',')
+        snap.save
+        data.destroy
       end
 
     end

@@ -116,7 +116,7 @@ THREESESSION.Viewport = function(){
   };
 
   this.postedit = function(operation,uuid,target,value){
-    if(operation == "trans"){
+    if(operation == "edit"){
       var val = value.x + "," + value.y + "," + value.z;
       $.ajax({
         url: "/post",
@@ -187,7 +187,7 @@ THREESESSION.Viewport = function(){
         _vertex.geometry.verticesNeedUpdate = true;
         _select_vertex.verticesNeedUpdate = true;
         this.mode_switch(_mode.EDITMODE);
-        this.postedit("trans",_select_object.uuid,_select_vertex_idx,intersects[0].point);
+        this.postedit("edit",_select_object.uuid,_select_vertex_idx,intersects[0].point);
       }
     }
   };
@@ -253,6 +253,7 @@ THREESESSION.Viewport = function(){
     mesh = new THREE.Mesh(geometry, material);
     _this.object_group.add(mesh);
     _this.select(mesh);
+    this.postedit("primitive",mesh.uuid,type);
     return mesh;
   };
 
@@ -374,20 +375,15 @@ THREESESSION.Viewport = function(){
   };
   
   this.intersecter = function(){
-    // var im = intersect_object.matrix.clone();
     var sm = new THREE.Matrix4().set(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
     var cm = _this.camera.matrixWorld.clone();
     cm.elements[12] = 0;
     cm.elements[13] = 0;
     cm.elements[14] = 0;
-    nm = sm.multiply(cm);
 
     intersect_object.matrixNeedsUpdate = true;
     intersect_object.matrixAutoUpdate = false;
-    intersect_object.matrix = nm;
-    // console.log(intersect_object.matrix);
-    // console.log("nm");
-    // console.log(nm);
+    intersect_object.matrix = sm.multiply(cm);
 
   };
   this.animate = function() {
