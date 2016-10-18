@@ -21,3 +21,7 @@
 //= require App
 //= require Viewport
 //= require Menu
+//= require client
+//= require Select
+//= require View
+
