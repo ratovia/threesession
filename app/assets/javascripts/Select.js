@@ -39,8 +39,6 @@ THREESESSION.Select = function(){
   }
   /////////////////////////////////////////////////
   /////////////////Public function/////////////////
-
-  
   this.get_edge = function(){
     return edge;
   };
@@ -69,6 +67,7 @@ THREESESSION.Select = function(){
     edge = new THREE.EdgesHelper(select,0xffa800);
     return edge;
   };
+
   this.set_vertex = function(){
     var particle = new THREE.Geometry();
 
@@ -87,7 +86,6 @@ THREESESSION.Select = function(){
     select_particle = new THREE.Points(particle,material.select_particle);
     return select_particle;
   };
-  
 
   this.set_select_vertex = function(point){
     var d, min_d = 10000, min_idx = -1;
@@ -101,10 +99,12 @@ THREESESSION.Select = function(){
         min_idx = i;
       }
     }
-    if(select_vertex.vertices.includes(vertices[min_idx])){
-      select_vertex.vertices.splice(select_vertex.vertices.indexOf(vertices[min_idx]),1);
+    var tmp = select_vertex.vertices;
+    var min_vertex = vertices[min_idx];
+    if(tmp.includes(min_vertex)){
+      tmp.splice(tmp.indexOf(min_vertex),1);
     }else{
-      select_vertex.vertices.push(vertices[min_idx]);
+      tmp.push(min_vertex);
     }
   };
 

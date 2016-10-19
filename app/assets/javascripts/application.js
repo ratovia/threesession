@@ -18,8 +18,8 @@
 //= require Projector
 //= require TransformControls
 //= require Threesession
-//= require App
-//= require Viewport
+// require App
+// require Viewport
 //= require Menu
 //= require client
 //= require Select

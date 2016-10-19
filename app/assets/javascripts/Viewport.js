@@ -82,6 +82,7 @@ THREESESSION.Viewport = function(){
     }).done(function (json) {
       var loader = new THREE.JSONLoader();
       object_group_uuid_array = [];
+      
       for(var i = 0, l = _this.object_group.children.length;i < l;i++){
         object_group_uuid_array.push(_this.object_group.children[i].uuid)
       }

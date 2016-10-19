@@ -36,7 +36,8 @@ THREESESSION.View = function(){
   var env_group = new THREE.Group();
   var obj_group = new THREE.Group();
   var loader = new THREE.JSONLoader();
-  var selecter = new THREESESSION.Select();
+  var selector = new THREESESSION.Select();
+  var uuid_array = [];
   /////////////////////////////////////////////////
   /////////////////private function////////////////
   function set_camera(type){
@@ -61,7 +62,6 @@ THREESESSION.View = function(){
         break;
     }
     camera_controls = new THREE.OrbitControls(camera);
-
   }
 
   function animate(){
@@ -98,7 +98,7 @@ THREESESSION.View = function(){
   }
   /////////////////////////////////////////////////
   /////////////////Public function/////////////////
-  this.init = function(mesh){
+  this.init = function(){
     set_camera();
     container.appendChild(renderer.domElement);
     env();
@@ -111,10 +111,15 @@ THREESESSION.View = function(){
   this.get_state = function(){
     return state;
   };
+
   this.add_obj_group = function(obj){
     obj_group.add(obj);
+    uuid_array.push(obj.uuid);
   };
-  
+
+  this.get_selector = function(){
+    return selector;
+  };
   this.setSize = function(){
     width = container.clientWidth;
     height = container.clientHeight;
@@ -216,10 +221,10 @@ THREESESSION.View = function(){
       case mode.OBJECTMODE:
         intersects = raycaster.intersectObjects(obj_group.children);
         if(intersects.length > 0) {
-          if(intersects[0].object != selecter.get_edge()){
-            selecter.set_select(intersects[0].object);
-            if(!selecter.get_edge()) {
-              obj_group.add(selecter.set_edge());
+          if(intersects[0].object != selector.get_edge()){
+            selector.set_select(intersects[0].object);
+            if(!selector.get_edge()) {
+              obj_group.add(selector.set_edge());
             }
           }
         }
@@ -227,13 +232,13 @@ THREESESSION.View = function(){
       case mode.EDITMODE:
         intersects = raycaster.intersectObjects(obj_group.children);
         if(intersects.length > 0){
-          selecter.set_select_vertex(intersects[0].point);
-          obj_group.remove(selecter.get_select_particle());
-          obj_group.add(selecter.set_select_particle());
+          selector.set_select_vertex(intersects[0].point);
+          obj_group.remove(selector.get_select_particle());
+          obj_group.add(selector.set_select_particle());
         }
         break;
       case mode.TRANSMODE:
-        intersetcs = raycaster.intersectObject(intersecter);
+        intersects = raycaster.intersectObject(intersecter);
         break;
     }
   };
@@ -246,26 +251,29 @@ THREESESSION.View = function(){
     mouse.y = -(y / height) * 2 + 1;
   };
   
+  this.get_uuid_array = function(){
+    return uuid_array;  
+  };
+  
   this.mode_switch = function(str){
-    if(selecter.get_select()) {
+    if(selector.get_select()) {
       var mesh;
       switch (str) {
         case "object":
           state = mode.OBJECTMODE;
-          mesh = selecter.get_select();
+          mesh = selector.get_select();
           mesh.material = material.mesh;
-          obj_group.add(selecter.set_edge());
-          obj_group.remove(selecter.get_select_particle());
-          obj_group.remove(selecter.get_vertex());
-          selecter.init_select_vertex();
+          obj_group.add(selector.set_edge());
+          obj_group.remove(selector.get_select_particle());
+          obj_group.remove(selector.get_vertex());
           break;
         case "edit":
           state = mode.EDITMODE;
-          mesh = selecter.get_select();
+          mesh = selector.get_select();
           mesh.material = material.wireframe;
-          obj_group.remove(selecter.get_edge());
-          obj_group.add(selecter.set_vertex());
-          obj_group.add(selecter.set_select_particle());
+          obj_group.remove(selector.get_edge());
+          obj_group.add(selector.set_vertex());
+          obj_group.add(selector.set_select_particle());
           break;
         case "trans":
           state = mode.TRANSMODE;
@@ -274,12 +282,38 @@ THREESESSION.View = function(){
     }
   };
 
-  this.remove = function(){
-    obj_group.remove(selecter.get_edge());
-    obj_group.remove(selecter.get_vertex());
-    obj_group.remove(selecter.get_select_particle());
-    obj_group.remove(selecter.get_select());
-    selecter.init();
+  this.removeall = function(){
+    for(var i = obj_group.children.length - 1;i >= 0; i--){
+      obj_group.remove(obj_group.children[i]);
+    }
+    uuid_array = [];
+    selector.init();
     state = mode.OBJECTMODE;
-  }
+  };
+  
+  this.makemesh = function(json,uuid){
+    var model = loader.parse(json);
+    var mesh = new THREE.Mesh(model.geometry,material.mesh); 
+    mesh.uuid = uuid;
+    return mesh;
+  };
+  
+  this.remove = function(){
+    obj_group.remove(selector.get_edge());
+    obj_group.remove(selector.get_vertex());
+    obj_group.remove(selector.get_select_particle());
+    obj_group.remove(selector.get_select());
+    uuid_array.splice(uuid_array.indexOf(selector.get_select().uuid),1);
+    selector.init();
+    state = mode.OBJECTMODE;
+  };
+
+  this.remove_uuid = function(uuid){
+    for(var i = 0,l = obj_group.children.length;i < l;i++){
+      if(obj_group.children[i].uuid == uuid){
+        obj_group.remove(obj_group.children[i]);
+        uuid_array.splice(uuid_array.indexOf(uuid));
+      }
+    }
+  };
 };

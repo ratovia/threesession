@@ -13,13 +13,13 @@ class SessionsController < ApplicationController
     snap = Snap.all
     array1 = []
     array2 = []
+    array4 = []
     snap.each do |data|
       matrix_array = text_to_array(data.matrix)
       faces_array = text_to_array(data.faces_data)
       normals_array = text_to_array(data.normals_data)
       vertices_array = text_to_array(data.vertices_data)
       uvs_array = text_to_array(data.uvs_data)
-
 
       hash1 = {
         :name => data.name,
@@ -51,6 +51,7 @@ class SessionsController < ApplicationController
 
       array1.append(hash1)
       array2.append(hash2)
+      array4.append(data.uuid)
     end
 
     edit = Edit.all
@@ -87,7 +88,8 @@ class SessionsController < ApplicationController
         :uuid => '9D73C9AE-06F7-4F28-989A-9B8CCBD47A09'
       },
       :geometries => array2,
-      :edit => array3
+      :edit => array3,
+      :uuid_array => array4
     }
 
     data = JSON.generate(hash3)
@@ -100,8 +102,7 @@ class SessionsController < ApplicationController
     uuid = params[:uuid]
     target = params[:target]
     value = params[:value]
-
-
+    # 衝突回避処理
     Edit.create(:operation => operation, :uuid => uuid, :target => target, :value => value)
   end
 
