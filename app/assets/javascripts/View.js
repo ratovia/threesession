@@ -64,6 +64,16 @@ THREESESSION.View = function(){
     camera_controls = new THREE.OrbitControls(camera);
   }
 
+  function get_uuid_to_obj(uuid){
+    var obj = null;
+    for(var i = 0,l = obj_group.children.length;i < l;i++){
+      if(obj_group.children[i].uuid == uuid){
+        obj = obj_group.children[i];
+      }
+    }
+    return obj;
+  }
+
   function animate(){
     requestAnimationFrame(animate);
     render();
@@ -120,6 +130,15 @@ THREESESSION.View = function(){
   this.get_selector = function(){
     return selector;
   };
+
+  this.trans_point = function(edit){
+    var mesh = get_uuid_to_obj(edit.uuid);
+    console.log(edit);
+    var value = edit.value.split(',');
+    mesh.geometry.vertices[edit.target].set(value[0], value[1], value[2]);
+    mesh.geometry.verticesNeedUpdate = true;
+  };
+
   this.setSize = function(){
     width = container.clientWidth;
     height = container.clientHeight;
@@ -132,6 +151,7 @@ THREESESSION.View = function(){
   this.get_renderer_element = function(){
     return renderer.domElement;
   };
+
   this.primitive = function (type){
     var json,model,mesh;
     switch(type) {
@@ -239,6 +259,10 @@ THREESESSION.View = function(){
         break;
       case mode.TRANSMODE:
         intersects = raycaster.intersectObject(intersecter);
+        if(intersects.length > 0){
+          var point = new THREE.Vector3(intersects[0].point.x,intersects[0].point.y,intersects[0].point.z);
+          selector.trans_point(point);
+        }
         break;
     }
   };
@@ -251,10 +275,14 @@ THREESESSION.View = function(){
     mouse.y = -(y / height) * 2 + 1;
   };
   
+  this.trans_end = function(){
+    state = mode.EDITMODE;  
+  };
+  
   this.get_uuid_array = function(){
     return uuid_array;  
   };
-  
+
   this.mode_switch = function(str){
     if(selector.get_select()) {
       var mesh;

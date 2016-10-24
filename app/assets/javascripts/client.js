@@ -40,6 +40,8 @@
           }
           break;
         case "g":
+          view.mode_switch("trans");
+          view.picking();
           break;
         case "x":
           post_edit("remove",view.get_selector().get_select().uuid,0,0);
@@ -52,6 +54,14 @@
       }
     }, false);
 
+    window.addEventListener('keyup', function (event){
+      switch(event.key){
+        case "g":
+          view.trans_end();
+          var edit = view.get_selector().get_edit();
+          post_edit("edit",view.get_selector().get_select().uuid,edit.target,edit.value);
+      }
+    },false);
     window.addEventListener("mousemove", function(event){
       view.onmousemove(event);
     }, false);
@@ -96,7 +106,12 @@
       for(var i = 0,l = edit.length;i < l;i++){
         var ope = edit[i].operation;
         if(ope == "edit"){
-          
+          var select = view.get_selector().get_select();
+          if(select && select.uuid == edit[i].uuid){
+            view.get_selector().trans_point(edit[i].point);
+          }else{
+            view.trans_point(edit);
+          }
         }else if(ope == "primitive"){
           var mesh = view.primitive(edit[i].target);
           mesh.uuid = edit[i].uuid;

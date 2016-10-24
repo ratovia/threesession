@@ -19,6 +19,10 @@ THREESESSION.Select = function(){
   var vertex;// editの時の頂点
   var select_vertex = new THREE.Geometry();//選択した頂点列
   var select_particle;//選択した頂点列のmesh
+  var edit = {
+    target: null,
+    value: null
+  };
   /////////////////////////////////////////////////
   /////////////////private function////////////////
   function distance(vec1,vec2){
@@ -59,6 +63,9 @@ THREESESSION.Select = function(){
     return select_vertex;
   };
 
+  this.get_edit = function(){
+    return edit;
+  };
   this.set_select = function(obj){
     select = obj;
   };
@@ -88,6 +95,7 @@ THREESESSION.Select = function(){
   };
 
   this.set_select_vertex = function(point){
+    select_vertex = new THREE.Geometry();
     var d, min_d = 10000, min_idx = -1;
     var vertex;
     var vertices = current_vertices_position();
@@ -107,7 +115,30 @@ THREESESSION.Select = function(){
       tmp.push(min_vertex);
     }
   };
-
+  
+  this.set_edit = function(target,value){
+    edit.target = idx;
+    edit.value = point;
+  };
+  
+  this.trans_point = function(point){
+    var tmp = select_vertex.vertices[0];
+    var idx = select.geometry.vertices.indexOf(tmp);
+    select.geometry.vertices[idx].set(point.x,point.y,point.z);
+    idx = select_particle.geometry.vertices.indexOf(tmp);
+    select_particle.geometry.vertices[idx].set(point.x,point.y,point.z);
+    idx = vertex.geometry.vertices.indexOf(tmp);
+    vertex.geometry.vertices[idx].set(point.x,point.y,point.z);
+    
+    select.geometry.verticesNeedUpdate = true;
+    select_particle.geometry.verticesNeedUpdate = true;
+    vertex.geometry.verticesNeedUpdate = true;
+    
+    edit.target = idx;
+    edit.value = point;
+    
+  };
+  
   this.init = function(){
     select = null;
     edge = null;
