@@ -107,6 +107,7 @@
         if(ope == "edit"){
           var select = view.get_selector().get_select();
           var value = edit[i].value.split(",");
+          console.log()
           if(select && select.uuid == edit[i].uuid){
             view.get_selector().trans_point(value);
           }else{

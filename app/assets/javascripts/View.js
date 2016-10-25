@@ -133,8 +133,7 @@ THREESESSION.View = function(){
 
   this.trans_point = function(target,uuid,value){
     var mesh = get_uuid_to_obj(uuid);
-    var point = value.split(',');
-    mesh.geometry.vertices[target].set(point[0], point[1], point[2]);
+    mesh.geometry.vertices[target].set(value[0], value[1], value[2]);
     mesh.geometry.verticesNeedUpdate = true;
   };
 
@@ -259,7 +258,7 @@ THREESESSION.View = function(){
       case mode.TRANSMODE:
         intersects = raycaster.intersectObject(intersecter);
         if(intersects.length > 0){
-          var point = new THREE.Vector3(intersects[0].point.x,intersects[0].point.y,intersects[0].point.z);
+          var point = [intersects[0].point.x,intersects[0].point.y,intersects[0].point.z];
           selector.trans_point(point);
         }
         break;
