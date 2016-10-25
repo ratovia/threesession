@@ -98,7 +98,6 @@
           //edit apply
           apply_edit(json.edit);
         }
-          
       });
     }
     
@@ -108,7 +107,7 @@
         if(ope == "edit"){
           var select = view.get_selector().get_select();
           if(select && select.uuid == edit[i].uuid){
-            view.get_selector().trans_point(edit[i].point);
+            view.get_selector().trans_point(edit[i].value);
           }else{
             view.trans_point(edit);
           }
