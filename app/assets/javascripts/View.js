@@ -131,11 +131,10 @@ THREESESSION.View = function(){
     return selector;
   };
 
-  this.trans_point = function(edit){
-    var mesh = get_uuid_to_obj(edit.uuid);
-    console.log(edit);
-    var value = edit.value.split(',');
-    mesh.geometry.vertices[edit.target].set(value[0], value[1], value[2]);
+  this.trans_point = function(target,uuid,value){
+    var mesh = get_uuid_to_obj(uuid);
+    var point = value.split(',');
+    mesh.geometry.vertices[target].set(point[0], point[1], point[2]);
     mesh.geometry.verticesNeedUpdate = true;
   };
 

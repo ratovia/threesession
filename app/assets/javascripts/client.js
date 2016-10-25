@@ -106,10 +106,11 @@
         var ope = edit[i].operation;
         if(ope == "edit"){
           var select = view.get_selector().get_select();
+          var value = edit[i].value.split(",");
           if(select && select.uuid == edit[i].uuid){
-            view.get_selector().trans_point(edit[i].value);
+            view.get_selector().trans_point(value);
           }else{
-            view.trans_point(edit);
+            view.trans_point(edit[i].target,edit[i].uuid,value);
           }
         }else if(ope == "primitive"){
           var mesh = view.primitive(edit[i].target);
