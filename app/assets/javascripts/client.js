@@ -122,7 +122,9 @@
           if(select && select.uuid == edit[i].uuid){
             view.remove();
           }else{
-            view.remove_uuid(edit[i].uuid);
+            if(view.get_uuid_array().includes(edit[i].uuid)) {
+              view.remove_uuid(edit[i].uuid);
+            }
           }
         }
       }
