@@ -137,6 +137,12 @@ THREESESSION.View = function(){
     mesh.geometry.verticesNeedUpdate = true;
   };
 
+  this.delete_point = function(target,uuid){
+    var mesh = get_uuid_to_obj(uuid);
+    mesh.geometry.vertices[target].set(null);
+    mesh.geometry.verticesNeedUpdate = true;
+  };
+  
   this.setSize = function(){
     width = container.clientWidth;
     height = container.clientHeight;

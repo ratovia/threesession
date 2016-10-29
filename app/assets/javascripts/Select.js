@@ -122,7 +122,6 @@ THREESESSION.Select = function(){
   };
   
   this.trans_point = function(point){
-    console.log(point);
     var tmp = select_vertex.vertices[0];
     var idx = select.geometry.vertices.indexOf(tmp);
     select.geometry.vertices[idx].set(point[0],point[1],point[2]);
@@ -139,6 +138,20 @@ THREESESSION.Select = function(){
     var value = new THREE.Vector3(point[0],point[1],point[2]);
     edit.value = value;
     
+  };
+  
+  this.delete_point = function(target){
+    var tmp = select_vertex.vertices[target];
+    var idx = select.geometry.vertices.indexOf(tmp);
+    select.geometry.vertices[idx].set(null);
+    idx = select_particle.geometry.vertices.indexOf(tmp);
+    select_particle.geometry.vertices[idx].set(null);
+    idx = vertex.geometry.vertices.indexOf(tmp);
+    vertex.geometry.vertices[idx].set(null);
+
+    select.geometry.verticesNeedUpdate = true;
+    select_particle.geometry.verticesNeedUpdate = true;
+    vertex.geometry.verticesNeedUpdate = true;
   };
   
   this.init = function(){

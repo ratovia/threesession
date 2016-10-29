@@ -62,6 +62,7 @@
           post_edit("edit",view.get_selector().get_select().uuid,edit.target,edit.value);
       }
     },false);
+
     window.addEventListener("mousemove", function(event){
       view.onmousemove(event);
     }, false);
@@ -107,11 +108,12 @@
         if(ope == "edit"){
           var select = view.get_selector().get_select();
           var value = edit[i].value.split(",");
-          console.log()
           if(select && select.uuid == edit[i].uuid){
             view.get_selector().trans_point(value);
           }else{
-            view.trans_point(edit[i].target,edit[i].uuid,value);
+            if(view.get_uuid_array().includes(edit[i].uuid)) {
+              view.trans_point(edit[i].target, edit[i].uuid, value);
+            }
           }
         }else if(ope == "primitive"){
           var mesh = view.primitive(edit[i].target);
@@ -126,6 +128,16 @@
               view.remove_uuid(edit[i].uuid);
             }
           }
+        }else if(ope == "delete"){
+          var select = view.get_selector().get_select();
+          var value = edit[i].value.split(",");
+          if(select && select.uuid == edit[i].uuid){
+            view.get_selector().delete_point(edit[i].target);
+          }else{
+            if(view.get_uuid_array().includes(edit[i].uuid)) {
+              view.delete_point(edit[i].target, edit[i].uuid);
+            }
+          }
         }
       }
     }
@@ -137,6 +149,8 @@
       }else if(operation == "primitive"){
         val = value;
       }else if(operation == "remove"){
+        val = value;
+      }else if(operation == "delete"){
         val = value;
       }
       $.ajax({
