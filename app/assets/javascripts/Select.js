@@ -66,6 +66,7 @@ THREESESSION.Select = function(){
   this.get_edit = function(){
     return edit;
   };
+  
   this.set_select = function(obj){
     select = obj;
   };
