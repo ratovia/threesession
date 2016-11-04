@@ -130,11 +130,12 @@ THREESESSION.Select = function(){
     select_particle.geometry.vertices[idx].set(point[0],point[1],point[2]);
     idx = vertex.geometry.vertices.indexOf(tmp);
     vertex.geometry.vertices[idx].set(point[0],point[1],point[2]);
-    
+
+
     select.geometry.verticesNeedUpdate = true;
     select_particle.geometry.verticesNeedUpdate = true;
     vertex.geometry.verticesNeedUpdate = true;
-    
+
     edit.target = idx;
     var value = new THREE.Vector3(point[0],point[1],point[2]);
     edit.value = value;

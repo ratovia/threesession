@@ -72,7 +72,7 @@
       view.picking();
     });
 
-    setInterval(get_json,20000);
+    setInterval(get_json,10000);
 
     function get_json(){
       $.ajax({
@@ -103,13 +103,27 @@
     }
     
     function apply_edit(edit){
+      var state = view.get_state();
+      console.log(state);
       for(var i = 0,l = edit.length;i < l;i++){
         var ope = edit[i].operation;
         if(ope == "edit"){
           var select = view.get_selector().get_select();
           var value = edit[i].value.split(",");
-          if(select && select.uuid == edit[i].uuid && view.get_selector().get_edit().target == edit[i].targe ){
-            view.get_selector().trans_point(value);
+          if(select && select.uuid == edit[i].uuid){
+            if(state == 0){
+              console.log("call");
+              view.trans_point(edit[i].target, edit[i].uuid, value);
+              view.mode_switch("edit");
+              view.mode_switch("object");
+            }else if(state == 1){
+              if(view.get_selector().get_edit().target == edit[i].target) {
+                view.get_selector().trans_point(value);
+              }else{
+                view.trans_point(edit[i].target, edit[i].uuid, value);
+              }
+            }else if(state == 2){
+            }
           }else{
             if(view.get_uuid_array().includes(edit[i].uuid)) {
               view.trans_point(edit[i].target, edit[i].uuid, value);
