@@ -40,8 +40,10 @@
           }
           break;
         case "g":
-          view.mode_switch("trans");
-          view.picking();
+          if(view.get_state() != 0) {
+            view.mode_switch("trans");
+            view.picking();
+          }
           break;
         case "x":
           post_edit("remove",view.get_selector().get_select().uuid,0,0);
@@ -57,9 +59,12 @@
     window.addEventListener('keyup', function (event){
       switch(event.key){
         case "g":
-          view.trans_end();
-          var edit = view.get_selector().get_edit();
-          post_edit("edit",view.get_selector().get_select().uuid,edit.target,edit.value);
+          if(view.get_state() == 2) {
+            view.trans_end();
+            var edit = view.get_selector().get_edit();
+            post_edit("edit", view.get_selector().get_select().uuid, edit.target, edit.value);
+          }
+          break;
       }
     },false);
 
@@ -72,7 +77,7 @@
       view.picking();
     });
 
-    setInterval(get_json,10000);
+    setInterval(get_json,1000);
 
     function get_json(){
       $.ajax({
@@ -84,7 +89,6 @@
         if(json.uuid_array.toString() == view.get_uuid_array().toString()){
           changeflag = false;
         }
-        
         if(changeflag){
           //init
           view.removeall();
@@ -99,12 +103,12 @@
           //edit apply
           apply_edit(json.edit);
         }
+
       });
     }
     
     function apply_edit(edit){
       var state = view.get_state();
-      console.log(state);
       for(var i = 0,l = edit.length;i < l;i++){
         var ope = edit[i].operation;
         if(ope == "edit"){
@@ -112,7 +116,6 @@
           var value = edit[i].value.split(",");
           if(select && select.uuid == edit[i].uuid){
             if(state == 0){
-              console.log("call");
               view.trans_point(edit[i].target, edit[i].uuid, value);
               view.mode_switch("edit");
               view.mode_switch("object");
