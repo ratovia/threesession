@@ -3,6 +3,7 @@
  */
 {
   $(document).ready(function(){
+    const poling_time = 1000;
     var menu = new THREESESSION.Menu();
     var view = new THREESESSION.View();
     view.init();
@@ -77,28 +78,40 @@
       view.picking();
     });
 
-    setInterval(get_json,1000);
+    setInterval(get_json,poling_time);
 
     function get_json(){
       $.ajax({
         url: "/load",
         type: "get"
       }).done(function (json) {
-        console.log(json);
+        console.info(json);
         var changeflag = true;
         if(json.uuid_array.toString() == view.get_uuid_array().toString()){
           changeflag = false;
         }
         if(changeflag){
           //init
+          var select = view.get_selector().get_select();
           view.removeall();
           //snap
           for(var i = 0,l = json.geometries.length;i<l;i++){
-            var mesh = view.makemesh(json.geometries[i].data,json.geometries[i].uuid)
+            var mesh = view.makemesh(json.geometries[i].data,json.geometries[i].uuid);
             view.add_obj_group(mesh);
           }
           //edit apply
           apply_edit(json.edit);
+          if(select) {
+            view.get_selector().set_select(select);
+            if(!view.get_selector().get_edge()) {
+              view.add_obj_group(view.get_selector().set_edge());
+            }
+            if(view.get_state() == 1){
+              view.mode_switch("edit");
+            }else if(view.get_state() == 2){
+              view.mode_switch("trans");
+            }
+          }
         }else{
           //edit apply
           apply_edit(json.edit);
@@ -175,9 +188,9 @@
         type: "post",
         data: {"operation": operation,"uuid": uuid,"target": target,"value": val }
       }).done(function(){
-        console.log("post success");
+        console.info("post success");
       }).fail(function(){
-        console.log("post failed");
+        console.assert("post failed");
       });
     }
   });

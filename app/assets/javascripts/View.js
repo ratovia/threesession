@@ -288,7 +288,7 @@ THREESESSION.View = function(){
   };
   
   this.get_uuid_array = function(){
-    return uuid_array;  
+    return uuid_array;
   };
 
   this.mode_switch = function(str){
@@ -298,7 +298,7 @@ THREESESSION.View = function(){
         case "object":
           state = mode.OBJECTMODE;
           mesh = selector.get_select();
-          mesh.material = material.mesh;
+          get_uuid_to_obj(mesh.uuid).material = material.mesh;
           obj_group.add(selector.set_edge());
           obj_group.remove(selector.get_select_particle());
           obj_group.remove(selector.get_vertex());
@@ -306,7 +306,7 @@ THREESESSION.View = function(){
         case "edit":
           state = mode.EDITMODE;
           mesh = selector.get_select();
-          mesh.material = material.wireframe;
+          get_uuid_to_obj(mesh.uuid).material = material.wireframe;
           obj_group.remove(selector.get_edge());
           obj_group.add(selector.set_vertex());
           obj_group.add(selector.set_select_particle());
