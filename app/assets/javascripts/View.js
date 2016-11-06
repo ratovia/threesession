@@ -324,7 +324,6 @@ THREESESSION.View = function(){
     }
     uuid_array = [];
     selector.init();
-    state = mode.OBJECTMODE;
   };
   
   this.makemesh = function(json,uuid){
