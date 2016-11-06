@@ -13,10 +13,10 @@
 //= require jquery
 //= require jquery_ujs
 //= require turbolinks
-//= require ../../../vendor/assets/javascripts/three.min.js
-//= require ../../../vendor/assets/javascripts/OrbitControls.js
-//= require ../../../vendor/assets/javascripts/Projector.js
-//= require ../../../vendor/assets/javascripts/TransformControls.js
+//= require three.min.js
+//= require OrbitControls.js
+//= require Projector.js
+//= require TransformControls.js
 //= require Threesession
 // require App
 // require Viewport
