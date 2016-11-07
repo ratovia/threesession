@@ -13,11 +13,15 @@
 //= require jquery
 //= require jquery_ujs
 //= require turbolinks
-//= require three.min
-//= require OrbitControls
-//= require Projector
-//= require TransformControls
+//= require three.min.js
+//= require OrbitControls.js
+//= require Projector.js
+//= require TransformControls.js
 //= require Threesession
-//= require App
-//= require Viewport
+// require App
+// require Viewport
 //= require Menu
+//= require client
+//= require Select
+//= require View
+

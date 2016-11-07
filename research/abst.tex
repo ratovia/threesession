@@ -1,0 +1,124 @@
+\documentclass[10.5pt, a4paper]{jsarticle}
+%--------------図を挿入するための設定等々-----------
+\usepackage{amsmath, amssymb}
+\usepackage{bm}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{ascmac}
+\usepackage{fancybox}
+\usepackage{float}
+\usepackage{url}
+
+\usepackage{comment}
+
+%--------------文章の縦横の位置調整-----------
+\usepackage[top=15truemm, bottom=15truemm, left=15truemm, right=15truemm]{geometry}
+%\setlength{\textheight}{46\baselineskip}
+%\addtolength{\textheight}{\topskip}
+%\setlength{\voffset}{-70pt}
+
+%% ここまで設定 %%
+\begin{document}
+
+\twocolumn[
+    \begin{center}
+        {pluto 中間発表}\vspace{3mm}\\
+	    {\LARGE 3DCGモデリングにおける同期編集システムの研究 }\vspace{3mm}\\
+	    {知能情報工学科 乃万研究室 13231071　古城戸　隆志\hspace{3mm}\\
+                   2016 年  11月 18日 (金)}
+    \end{center}
+    \vspace{7mm}
+]
+
+\pagestyle{empty} % ページ番号をつけない.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%　表や図の名前を与える \caption 命令はコロンが入ってしまう．
+%　以下の命令でコロンが入らないようにする．
+\makeatletter
+\long\def\@makecaption#1#2{%
+\vskip\abovecaptionskip%
+\sbox\@tempboxa{#1\hspace{1zw}#2}
+\ifdim \wd\@tempboxa >\hsize%
+
+#1 #2\par
+\else
+\global \@minipagefalse
+\hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
+\fi
+\vskip\belowcaptionskip}
+\makeatother
+
+\makeatletter
+\def\section{\@startsection {section}{1}{\z@}{0ex plus 0ex minus 0ex}{0ex plus 0ex}{\Large\bf}}
+\makeatother
+
+\makeatletter
+\def\subsection{\@startsection {subsection}{1}{\z@}{0ex plus 0ex minus 0ex}{0ex plus 0ex}{\normalsize\bf}}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\noindent
+
+
+%% 本文 %%
+\section{背景}
+近年, Google DocumentやMicrosoft Word Onlineに代表される同期編集システムがある.
+同期編集に関する研究は多数行われており, その一つとしてWebページの同期編集を可能とするシステムWFE-Sの研究がある\cite{WFE-S}.
+WFE-Sでは, 各クライアント間の編集の衝突を減らすために, 編集前と編集後の差分データによる差分同期の方法が提案されている.
+また, 3Dモデリングの同期編集を可能とするCoMayaの研究がある\cite{CoMaya}.
+しかし, CoMayaではオブジェクト単位の同期となり, オブジェクトを構成する頂点の操作においての同期は実装されていない.
+本研究では, オブジェクト自体とその頂点の操作も含めた3Dモデリングにおける3次元データを対象とする.
+従来のテキストデータより構造が複雑な3次元データに, 差分データによる差分同期の方法を適用する場合,
+データ管理において3次元データならではの同期機構が必要である.
+また, オブジェクトを構成する頂点の編集を扱う場合, 3次元データならではの衝突回避処理が必要である.
+
+\section{目的}
+本研究では, 3Dモデリングにおける3次元データならではの編集内容の衝突やデータ管理を考慮した同期編集システムを提案する.
+これにより, 3Dモデリングにおいて複数人で頂点データを共有し同期編集が可能となる機能の実装を目指す.
+
+\section{システム}
+本システムは, ユーザによる頂点編集が可能なクライアントと, 頂点編集のデータを管理するサーバプログラムによって構成されるモデリングソフトである.
+また, 複数クライアントでの編集結果の同期には, 頂点編集の差分データを用いる.
+処理の流れは, クライアントが頂点編集のデータをサーバに送信すると, サーバは衝突回避処理を行い, 差分データとしてデータを管理をする.
+また, クライアントは一定時間ごとにデータをサーバから受信し適用する.
+これらの手順によりクライアント間でデータの同期をする.
+
+\subsection{データの送信}
+ユーザは従来のモデリングソフトと同様に頂点編集し, 3Dモデルを作成する.
+クライアントは, ユーザが選択した頂点, 操作内容, クライアント識別子といった頂点編集のデータをサーバに送信する.
+また, 新規のクライアントはクライアント識別子をサーバに送信し接続要求をする.
+
+\subsection{衝突回避処理}
+クライアントが, サーバの最新データと同期できていない状態で, 頂点編集のデータを送信する場合に, 編集内容の衝突が起こる可能性がある.
+サーバは, 衝突の可能性がある頂点編集のデータに対して衝突回避処理をする.
+ユーザが編集している頂点に対して, その頂点が含まれる面を頂点編集の範囲とする.
+衝突回避処理は, 頂点編集の範囲が他のクライアントと重なっている場合, 先に受け取った頂点編集を採用し,
+他の頂点編集に対して, 衝突した編集内容に応じた操作のキャンセルや位置の補正を行う.
+
+\subsection{差分データの管理}
+サーバは, 衝突回避処理後採用されたデータを, 差分データとしてデータベースに登録する.
+また, 一定時間ごとに, すべての差分データを処理しスナップショットを作成する.
+スナップショットは, 3Dオブジェクトごとに作成し, クライアントで描画する際に必要な頂点データや位置データなどで構成される.
+スナップショットの作成に利用した差分データは, スナップショットの作成後に削除する.
+
+\subsection{データの受信}
+クライアントが, 一定時間ごとにサーバへデータの受信要求をすると, サーバはスナップショットと差分データをクライアントに送信する.
+データを受信したクライアントは, クライアントに保存されている3Dオブジェクトの頂点データや位置データを, 受信したスナップショットのデータに置き換える.
+その後, 受信した差分データを, 古い方から順に適用することでデータの同期を完了する.
+
+\section{進捗と今後の方針}
+現在, WFE-Sの差分同期機構を参考にしたWebで動作する3DCGモデリングソフトを開発した.
+今後は, 衝突回避処理の詳細を実装する.
+また, 現在の差分同期は, スナップショットを受信要求ごとに送信するという無駄が生じているため改善する必要がある.
+さらに, モデリングに必要な操作の拡張を行うことでシステムの完成を目指す.
+
+%%　参考文献　%%
+
+\begin{thebibliography}{9}
+\bibitem{WFE-S}
+合田拓史ら, ``既存Webページ同期編集システムWFE-Sにおける差分同期機構の試作,'' 情報科学技術フォーラム講演論文集, Vol. 11, pp. 31 -- 37, 2012.
+\bibitem{CoMaya}
+Agustina, et. al. ``Incorporating Advanced Collaboration Capabilities into 3D Digital Media Design Tools,'' {\it CSCW '08}, pp. 5 -- 8, 2008.
+
+\end{thebibliography}
+
+\end{document}
