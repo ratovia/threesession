@@ -7,7 +7,7 @@ class CreateSnaps < ActiveRecord::Migration
       t.integer :vertices
       t.integer :uvs
       t.string :name
-      t.string :uuid
+      t.string :uuid, unique: true
       t.text :matrix
       t.text :faces_data
       t.text :normals_data

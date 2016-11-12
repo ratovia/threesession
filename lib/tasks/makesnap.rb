@@ -23,6 +23,7 @@ class Makesnap
         data.destroy
       elsif data.operation == 'primitive'
         if data.target == 'cube'
+          puts data.uuid
           Snap.create(:faces => 6,
                       :version => 3,
                       :normals => 6,

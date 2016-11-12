@@ -128,6 +128,8 @@ THREESESSION.Select = function(){
     var tmp = select_vertex.vertices[0];
     var idx = select.geometry.vertices.indexOf(tmp);
     var value = new THREE.Vector3(point[0],point[1],point[2]);
+    console.log(idx);
+    console.log(select.geometry.vertices);
     select.geometry.vertices[idx].set(point[0],point[1],point[2]);
     idx = select_particle.geometry.vertices.indexOf(tmp);
     select_particle.geometry.vertices[idx].set(point[0],point[1],point[2]);
@@ -157,7 +159,7 @@ THREESESSION.Select = function(){
     select = null;
     edge = null;
     vertex = null;
-    select_vertex = new THREE.Geometry();
+    // select_vertex = new THREE.Geometry();
     select_particle = null;
   };
 };

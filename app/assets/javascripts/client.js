@@ -13,21 +13,26 @@
     $('#cube').on('click', function() {
       var mesh = view.primitive("cube");
       view.add_obj_group(mesh);
+      view.add_uuid_array(mesh.uuid);
       post_edit("primitive",mesh.uuid,"cube",0);
     });
     $('#plane').on('click', function() {
       var mesh = view.primitive("plane");
       view.add_obj_group(mesh);
+      view.add_uuid_array(mesh.uuid);
+
       post_edit("primitive",mesh.uuid,"plane",0);
     });
     $('#cylinder').on('click', function() {
       var mesh = view.primitive("cylinder");
       view.add_obj_group(mesh);
+      view.add_uuid_array(mesh.uuid);
       post_edit("primitive",mesh.uuid,"cylinder",0);
     });
     $('#sphere').on('click', function() {
       var mesh = view.primitive("sphere");
       view.add_obj_group(mesh);
+      view.add_uuid_array(mesh.uuid);
       post_edit("primitive",mesh.uuid,"sphere",0);
     });
 
@@ -90,6 +95,9 @@
         if(json.uuid_array.toString() == view.get_uuid_array().toString()){
           changeflag = false;
         }
+        console.log(json.uuid_array);
+        console.log(view.get_uuid_array());
+        console.log(changeflag);
         if(changeflag){
           //init
           var select = view.get_selector().get_select();
@@ -98,6 +106,7 @@
           for(var i = 0,l = json.geometries.length;i<l;i++){
             var mesh = view.makemesh(json.geometries[i].data,json.geometries[i].uuid);
             view.add_obj_group(mesh);
+            view.add_uuid_array(mesh.uuid);
           }
           //edit apply
           apply_edit(json.edit);
@@ -149,6 +158,7 @@
           var mesh = view.primitive(edit[i].target);
           mesh.uuid = edit[i].uuid;
           view.add_obj_group(mesh);
+          view.add_uuid_array(mesh.uuid);
         }else if(ope == "remove"){
           var select = view.get_selector().get_select();
           if(select && select.uuid == edit[i].uuid){

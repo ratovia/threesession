@@ -124,9 +124,12 @@ THREESESSION.View = function(){
 
   this.add_obj_group = function(obj){
     obj_group.add(obj);
-    uuid_array.push(obj.uuid);
   };
 
+  this.add_uuid_array = function(uuid){
+    uuid_array.push(uuid);
+  };
+  
   this.get_selector = function(){
     return selector;
   };
