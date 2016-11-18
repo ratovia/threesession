@@ -21,6 +21,20 @@ class Makesnap
         snap.vertices_data = vertices_array.join(',')
         snap.save
         data.destroy
+      elsif data.operation == 'delete'
+        snap = Snap.find_by(uuid: data.uuid)
+
+        vertices_array = []
+        vertices_array += snap.vertices_data.split(',').map(&:to_i)
+
+        3.times do |i|
+          vertices_array[data.target.to_i * 3 + i] = nil
+          vertices_array.compact
+        end
+
+        snap.vertices_data = vertices_array.join(',')
+        snap.save
+        data.destroy
       elsif data.operation == 'primitive'
         if data.target == 'cube'
           puts data.uuid

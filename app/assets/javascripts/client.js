@@ -52,8 +52,13 @@
           }
           break;
         case "x":
-          post_edit("remove",view.get_selector().get_select().uuid,0,0);
-          view.remove();
+          if(view.get_state() == 0){
+            post_edit("remove",view.get_selector().get_select().uuid,0,0);
+            view.remove();
+          }else if(view.get_state() == 1){
+            view.get_selector().delete_point();
+            post_edit("delete",view.get_selector().get_select().uuid,view.get_selector().get_edit().target,0);
+          }
           break;
         case "r":
           break;
@@ -172,10 +177,21 @@
           var select = view.get_selector().get_select();
           var value = edit[i].value.split(",");
           if(select && select.uuid == edit[i].uuid){
-            view.get_selector().delete_point(edit[i].target);
+            if(state == 0){
+              view.delete_point(edit[i].target, edit[i].uuid);
+              view.mode_switch("edit");
+              view.mode_switch("object");
+            }else if(state == 1){
+              if(view.get_selector().get_edit().target == edit[i].target) {
+                view.get_selector().delete_point();
+              }else{
+                view.delete_point(edit[i].target, edit[i].uuid);
+              }
+            }else if(state == 2){
+            }
           }else{
             if(view.get_uuid_array().includes(edit[i].uuid)) {
-              view.delete_point(edit[i].target, edit[i].uuid);
+              view.trans_point(edit[i].target, edit[i].uuid, value);
             }
           }
         }
