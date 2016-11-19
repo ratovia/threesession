@@ -103,7 +103,27 @@ class SessionsController < ApplicationController
     target = params[:target]
     value = params[:value]
     # 衝突回避処理
-    Edit.create(:operation => operation, :uuid => uuid, :target => target, :value => value)
+    collision = false
+    if operation == 'edit'
+      edit_data = Edit.where(uuid: uuid).where(target: target)
+      unless edit_data.empty?
+        collision = true
+      end
+    elsif operation == 'delete'
+      edit_data = Edit.where(uuid: uuid).where(target: target)
+      unless edit_data.empty?
+        collision = true
+      end
+    elsif operation == 'primitive'
+      collision = false
+    elsif operation == 'remove'
+      if Edit.find_by(uuid: uuid)
+        collision = true
+      end
+    end
+    unless collision
+      Edit.create(:operation => operation, :uuid => uuid, :target => target, :value => value)
+    end
   end
 
   private
