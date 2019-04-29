@@ -24,4 +24,3 @@
 //= require client
 //= require Select
 //= require View
-
