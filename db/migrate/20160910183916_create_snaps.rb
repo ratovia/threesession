@@ -1,4 +1,4 @@
-class CreateSnaps < ActiveRecord::Migration
+class CreateSnaps < ActiveRecord::Migration[4.2]
   def change
     create_table :snaps do |t|
       t.integer :faces
