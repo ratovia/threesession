@@ -36,6 +36,10 @@ gem 'whenever', require: false
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
+
+# Use devise
+gem "devise"
+
 group :test do
   gem 'minitest-reporters', '1.0.5'
 end
