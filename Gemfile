@@ -39,6 +39,10 @@ gem 'whenever', require: false
 
 # Use devise
 gem "devise"
+# Use Haml
+gem 'haml-rails'
+# convert .erb files to .haml
+gem 'erb2haml'
 
 group :test do
   gem 'minitest-reporters', '1.0.5'

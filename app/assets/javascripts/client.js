@@ -3,7 +3,7 @@
  */
 {
   $(document).ready(function(){
-    const poling_time = 1000;
+    const poling_time = 100000;
     var menu = new THREESESSION.Menu();
     var view = new THREESESSION.View();
     view.init();
