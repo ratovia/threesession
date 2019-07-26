@@ -8,6 +8,15 @@ THREESESSION.Menu = function(){
 			$('#side_bar').addClass("menu-open")
 		}
 	});
+	$(".toggle-edit-pannel").on("click",function(){
+		if ($('#edit-panel').hasClass("menu-open")){
+			$('#edit-panel').css("right","-200px");
+			$('#edit-panel').removeClass("menu-open")
+		} else {
+			$('#edit-panel').css("right","0px");
+			$('#edit-panel').addClass("menu-open")
+		}
+	});
 	$(".toggle-list-menu").on("click",function(){
 		let child = $(this).children("ul");
 		if(child.hasClass("menu-open")){
